@@ -1,0 +1,82 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+
+    <ui:define name="content">
+        <h:outputStylesheet name="employeeActivities.css" library="css"/>
+        <div class="outer">
+            <div class="inner">
+                <!-- including javascript to make the calendar german (and to set monday is the start of the week) -->
+                <script type="text/javascript">
+                    PrimeFaces.locales['de'] = {
+                        monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                        dayNamesMin: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+                        firstDay: 1,
+                    };
+                </script>
+
+                <div class="heading">
+                    <h:outputText value="Hier finden Sie die Aktivitäten der Ihnen zugeteilten Nutzer:"/>
+                </div>
+
+                <h:form id="form">
+                    <p:growl id="growl" showDetail="true" sticky="true"/>
+
+                    <h:outputText value="Wählen Sie Team und Monat aus:"></h:outputText>
+
+                    <div class="ui-inputgroup">
+
+                        <div id="selection">
+                            <p:datePicker id="month" view="month"
+                                          value="#{departmentTeamActivityController.selectedDate}" pattern="MM/yyyy"
+                                          yearNavigator="true" yearRange="2000:2030"/>
+
+                            <p:outputLabel for="@next"/>
+
+                            <div id="select-menu">
+                            <p:selectOneMenu id="team" value="#{departmentTeamActivityController.team}">
+                                <f:selectItems value="#{departmentTeamActivityController.teams}"/>
+                            </p:selectOneMenu>
+                            </div>
+
+                            <div id="save-button">
+                                <p:commandButton value="Aktivitäten anzeigen"
+                                                 action="#{departmentTeamActivityController.executeSwitchView()}"
+                                                 update="@form activity-list-form, pie-chart"/>
+                            </div>
+                        </div>
+
+                        <h:form id="activity-list-form">
+
+                            <p:dataTable id="activityTable" var="activity"
+                                         value="#{departmentTeamActivityController.currentActivitiesPercentage}"
+                                         widgetVar="activityTable"
+                                         emptyMessage="Keine Aktivitäten für das Team eingetragen">
+                                <p:column class="management-column" headerText="Aktivität">
+                                    <h:outputText value="#{activity.key}"/>
+                                </p:column>
+                                <p:column class="management-column" headerText="Anteil">
+                                    <h:outputText value="#{activity.value}%">
+                                    </h:outputText>
+                                </p:column>
+                            </p:dataTable>
+
+                        </h:form>
+                    </div>
+                </h:form>
+
+                <p:chart type="pie" id="pie-chart" responsive="true" model="#{departmentTeamActivityController.model}"/>
+            </div>
+
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>

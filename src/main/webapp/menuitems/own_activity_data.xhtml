@@ -1,0 +1,90 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+
+    <ui:define name="content">
+        <h:outputStylesheet name="ownActivites.css" library="css"/>
+        <div class="outer">
+            <div class="inner">
+                <!-- including javascript to make the calendar german (and to set monday is the start of the week) -->
+                <script type="text/javascript">
+                    PrimeFaces.locales['de'] = {
+                        monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember' ],
+                        dayNamesMin: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+                        firstDay: 1,
+                    };
+                </script>
+
+                <div class="heading">
+                    <h:outputText value="Hier finden Sie Ihre Aktivitäten:"/>
+                </div>
+
+                <h:form id="form">
+                    <p:growl id="growl" showDetail="true" sticky="true"/>
+
+                    <div class="ui-inputgroup">
+                        <div>
+                            <p:outputLabel for="@next"/>
+                            <p:selectOneMenu id="viewSelection" value="#{ownActivityController.viewSelection}">
+                                <f:selectItem itemLabel="Tagesansicht" itemValue="0" />
+                                <f:selectItem itemLabel="Wochenansicht" itemValue="1" />
+                                <f:selectItem itemLabel="Monatsansicht" itemValue="2" />
+                            </p:selectOneMenu>
+
+                            <p:outputLabel for="inline"/>
+                            <p:calendar id="inline" value="#{ownActivityController.selectedDate}" locale="de" inline="true" mode="inline"/>
+
+                            <div id="save-button" >
+                                <p:commandButton value="Aktivitäten anzeigen" action="#{ownActivityController.executeSwitchView()}" update="@form activity-list-form, pie-chart" />
+                            </div>
+
+                        </div>
+
+                        <h:form id="activity-list-form">
+
+                            <div class="ui-inputgroup">
+                                        <p:dataTable id="activityTable" var="activity" value="#{ownActivityController.currentActivitiesPercentage}" editable="true"
+                                                     widgetVar="activityTable"
+                                                     emptyMessage="Keine Aktivitäten für User eingetragen" >
+
+
+                                            <p:column class="management-column" headerText="Aktivität" style="text-align: center">
+                                                <p:cellEditor>
+                                                    <f:facet name="output"><h:outputText value="#{activity.key}"/></f:facet>
+                                                    <f:facet name="input">
+                                                        <p:selectOneMenu id="taskcategory" value="#{ownActivityController.selectedTaskCategory}" label="Task Kategorien" >
+                                                            <f:selectItems value="#{ownActivityController.availableTaskCategories}"/>
+                                                        </p:selectOneMenu>
+                                                    </f:facet>
+                                                </p:cellEditor>
+                                            </p:column>
+
+                                            <p:column class="management-column" headerText="Anteil" style="text-align: center">
+                                                <p:cellEditor>
+                                                    <f:facet name="output"><h:outputText value="#{activity.value}" /></f:facet>
+                                                    <f:facet name="input"><p:inputText id="percentInput" value="#{activity.value}"/></f:facet>
+                                                </p:cellEditor>
+                                            </p:column>
+
+                                        </p:dataTable>
+                            </div>
+
+                        </h:form>
+
+                    </div>
+
+                </h:form>
+
+                <p:chart type="pie" id="pie-chart" responsive="true" model="#{ownActivityController.model}"/>
+            </div>
+
+        </div>
+
+    </ui:define>
+
+</ui:composition>

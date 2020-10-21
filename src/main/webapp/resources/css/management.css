@@ -1,0 +1,198 @@
+.outer {
+    display: grid;
+    height: max-content;
+    place-items: center;
+    margin: 5%;
+    margin-top: 3%;
+    border-radius: 20px;
+    background-color: white;
+    opacity: 0.8;
+}
+
+.inner {
+    display: grid;
+    height: max-content;
+    margin-top: 3%;
+    margin-bottom: 3%;
+    width: 90%;
+    font-size: 5vh;
+}
+
+#heading {
+    font-size: 3vh !important;
+    text-align: center;
+    margin-bottom: 3%;
+}
+
+.ui-datatable-header {
+    background-color: #00d7ff !important;
+    border-color: #00d7ff !important;
+}
+
+.ui-column-title{
+    font-weight: bold !important;
+}
+
+.text {
+    font-size: 1.5vh;
+}
+
+.ui-inputfield{
+    width: 30vh;
+    height: 5vh;
+    background-color: whitesmoke;
+    box-shadow: 2px 2px lightslategrey;
+    border-color: lightslategrey;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+
+.filter-field{
+    margin: 1% !important;
+    width: 60vh;
+    text-align: center;
+}
+
+.ui-paginator {
+    margin-bottom: 3% !important;
+}
+
+.ui-state-active {
+    background-color: #00d7ff !important;
+}
+
+.ui-state-focus {
+    border-color: #00d7ff !important;
+}
+
+.ui-dialog-titlebar {
+    border-color: #00d7ff !important;
+    background-color: #00d7ff !important;
+}
+
+.dlg {
+    margin: 0 auto !important;
+    width: 60% !important;
+}
+
+.form {
+    content: "";
+    display: table;
+    clear: both;
+    width: 100% !important;
+    margin-top: 2%;
+}
+
+.form-column {
+    float: left;
+    width: 29%;
+    margin-left: 2%;
+    margin-right: 2%;
+    margin-bottom: 1%;
+    height: 100%
+}
+
+
+
+.user-pic {
+    width: 80%;
+    margin-top: 12%;
+    box-shadow: 2px 2px lightslategrey;
+    border-color: lightslategrey;
+    border-radius: 20px;
+    border-width: 1px;
+    border-style: solid;
+    margin-left: 10%;
+}
+
+.user-pic:hover {
+    border-color: black ;
+}
+
+
+.upload-button {
+    float: left;
+    margin-left: 30% !important;
+    margin-top: 5% !important;
+}
+
+.mail-checkbox {
+    margin-top: 15% !important;
+    margin-left: 15% !important;
+}
+
+
+.ui-chkbox-box {
+    margin-right: 1vh;
+    border-color: #00d7ff !important;
+}
+
+.ui-chkbox-label {
+    font-size: 1.5vh;
+    margin: 0% !important;
+}
+
+.ui-dialog-buttonpane {
+    text-align: center !important;
+}
+
+
+.ui-selectcheckboxmenu {
+    margin-top: 5% !important;
+    margin-bottom: 5% !important;
+    width: 30vh;
+    height: 5vh;
+    box-shadow: 2px 2px lightslategrey;
+    border-color: lightslategrey;
+
+}
+
+.ui-selectcheckboxmenu-label-container {
+    height: 4vh;
+    width: 20vh;
+}
+
+.ui-selectcheckboxmenu-label {
+    margin-top: 2%;
+    height: 4vh !important;
+}
+
+.dialog-buttons {
+    width: 100%;
+    display: grid;
+    place-items: center;
+    margin-bottom: 1%;
+}
+
+.newuser {
+    display: grid;
+    place-items: center
+}
+.newuser-button {
+    width: 17% !important;
+}
+
+.ui-selectonemenu {
+    margin-top: 5% !important;
+    margin-bottom: 5% !important;
+    width: 30vh;
+    height: 5vh;
+    box-shadow: 2px 2px lightslategrey;
+    border-color: lightslategrey;
+}
+
+.ui-selectonemenu-label-container {
+    height: 5vh;
+    width: 20vh;
+
+}
+
+.ui-selectonemenu-label {
+    margin-top: 2%;
+}
+
+.ui-selectonemenu-label.ui-inputfield{
+    box-shadow: none;
+    height: 4vh;
+}

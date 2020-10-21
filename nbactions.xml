@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<actions>
+    <action>
+        <actionName>CUSTOM-spring-boot-run</actionName>
+        <displayName>spring-boot-run</displayName>
+        <goals>
+            <goal>clean</goal>
+            <goal>spring-boot:run</goal>
+        </goals>
+    </action>
+    <action>
+        <actionName>CUSTOM-spring-boot-test</actionName>
+        <displayName>spring-boot-test</displayName>
+        <goals>
+            <goal>clean</goal>
+            <goal>verify</goal>
+            <goal>test</goal>
+        </goals>
+    </action>
+    <action>
+            <actionName>CUSTOM-spring-boot-debug</actionName>
+            <displayName>spring-boot-debug</displayName>
+            <goals>
+                <goal>clean</goal>
+                <goal>spring-boot:run</goal>
+            </goals>
+            <properties>
+                <spring-boot.run.jvmArguments>-Xdebug -Xrunjdwp:transport=dt_socket,server=n,address=${jpda.address}</spring-boot.run.jvmArguments>
+                <jpda.listen>true</jpda.listen>
+            </properties>
+        </action>
+</actions>

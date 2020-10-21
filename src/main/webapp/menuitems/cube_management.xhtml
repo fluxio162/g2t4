@@ -1,0 +1,398 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name="content">
+        <script type="text/javascript">
+            function handleDrop(event, ui) {
+                var droppedCar = ui.draggable;
+                droppedCar.fadeOut('fast');
+            }
+        </script>
+        <h:outputStylesheet name="cubeManagement.css" library="css"/>
+        <div class="outer">
+            <div class="inner">
+                <h:outputText id="heading" value="Geben Sie eine ID ein, um den Würfel bearbeiten zu können:"/>
+
+                <h:form id="cubeForm">
+                    <p:dataTable id="cubeTable" var="cube" value="#{timeFlipListController.timeFlipUserMap}" widgetVar="cubeTable"
+                                 emptyMessage="Kein Würfel gefunden."
+                                 filteredValue="#{timeFlipListController.filteredTimeFlips}"
+                                 rows="10"
+                                 paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                                 rowsPerPageTemplate="5,10,15"
+                                 paginatorPosition="bottom">
+                        <f:facet name="header">
+                            <p:outputPanel>
+                                <p:inputText class="filter-field" id="globalFilter" onkeyup="PF('cubeTable').filter()"
+                                             placeholder="Suchbegriff..."/>
+                            </p:outputPanel>
+                        </f:facet>
+
+                        <p:column class="management-column" headerText="Würfel-ID" filterBy="#{cube.key.id}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{cube.key.id}"/>
+                        </p:column>
+                        <p:column class="management-column" headerText="MAC-Adresse" filterBy="#{cube.key.macAddress}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{cube.key.macAddress}"/>
+                        </p:column>
+                        <p:column class="management-column" headerText="Erstellungsdatum" filterBy="#{cube.key.createDate}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{cube.key.createDate}">
+                                <f:convertDateTime pattern="dd.MM.yyyy 'um' HH:mm" timeZone="GMT+2"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column class="management-column" headerText="Hinzugefügt von" filterBy="##{cube.key.createUser.firstName} #{cube.key.createUser.lastName}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{cube.key.createUser.lastName}, #{cube.key.createUser.firstName} "/>
+                        </p:column>
+                        <p:column class="management-column" headerText="Benutzer" filterBy="##{cube.value.username}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{cube.value.username}"/>
+                        </p:column>
+                        <p:column class="management-column" headerText="Raum" filterBy="##{cube.value.room}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{cube.value.room}"/>
+                        </p:column>
+                        <p:column class="management-column" headerText="Miniserver" filterBy="##{cube.value.room.miniserver}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{cube.value.room.miniserver}"/>
+                        </p:column>
+
+
+                        <p:column style="width:130px;text-align: center">
+                            <p:commandButton update=":cubeForm:cubeEditDialog" icon="pi pi-pencil"
+                                             oncomplete="PF('cubeEditDialog').show()" title="Bearbeiten">
+                                <f:setPropertyActionListener value="#{cube.key}" target="#{timeFlipDetailController.timeFlip}"/>
+                            </p:commandButton>
+                            <p:commandButton update=":cubeForm:cubeConfigDialog" icon="pi pi-cog"
+                                             oncomplete="PF('cubeConfigDialog').show()" title="Konfigurieren">
+                                <f:setPropertyActionListener value="#{cube.key}" target="#{timeFlipConfigurationController.timeFlip}"/>
+                            </p:commandButton>
+                            <p:commandButton update=":cubeForm:cubeSideDialog" icon="pi pi-search"
+                                             oncomplete="PF('cubeSideDialog').show()" title="Seiten">
+                                <f:setPropertyActionListener value="#{cube.key}" target="#{timeFlipDetailController.timeFlip}"/>
+                            </p:commandButton>
+                            <p:commandButton action="#{timeFlipDetailController.doDeleteTimeFlip}" icon="pi pi-trash"
+                                             title="Löschen" update=":cubeForm:cubeTable">
+                                <f:setPropertyActionListener value="#{cube.key}" target="#{timeFlipDetailController.timeFlip}"/>
+                                <p:confirm header="Bestätigung"
+                                           message="Sind Sie sicher, dass sie diesen Würfel löschen wollen? Die Aktion kann nicht rückgängig gemacht werden"
+                                           icon="pi pi-info-circle"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                    <div class="newCube">
+                        <p:commandButton class="newCube-button" oncomplete="PF('newCubeDialog').show()"
+                                         value="Würfel hinzufügen" icon="pi pi-plus">
+
+                        </p:commandButton>
+                    </div>
+
+                    <p:dialog header="Bearbeiten" id="cubeEditDialog" class="dlg" widgetVar="cubeEditDialog" modal="false"
+                                                            showEffect="fade" hideEffect="fade" resizable="false">
+                    <p:outputPanel class="form" id="cubeData" rendered="#{not empty timeFlipDetailController.timeFlip}">
+                        <p:outputLabel class="text" value="Benutzer" for="user"/>
+                        <div class="ui-inputgroup">
+                            <p:selectOneMenu id="user" value="#{timeFlipDetailController.selectedUser}" label="Benutzer" filter="true" filterMatchMode="contains">
+                                <f:selectItem itemLabel="#{timeFlipDetailController.currentUser}" itemDisabled="true" />
+                                <f:selectItems value="#{timeFlipDetailController.availableUser}"/>
+                            </p:selectOneMenu>
+                        </div>
+                    </p:outputPanel>
+                    <div class="dialog-buttons">
+                        <h:panelGrid columns="3">
+                            <p:commandButton value="Speichern" action="#{timeFlipDetailController.doSaveTimeFlip}"
+                                             oncomplete="PF('cubeEditDialog').hide(), location.reload()"
+                                             update=":cubeForm:cubeTable"/>
+                            <p:commandButton value="Neu laden" action="#{timeFlipDetailController.doReloadTimeFlip()}"
+                                             update=":cubeForm:cubeData"/>
+                            <p:commandButton value="Abbrechen" onclick="PF('cubeEditDialog').hide()"/>
+                        </h:panelGrid>
+                    </div>
+                </p:dialog>
+
+                    <p:dialog header="Seiten" id="cubeSideDialog" class="dlg" widgetVar="cubeSideDialog" modal="false"
+                              showEffect="fade" hideEffect="fade" resizable="false">
+                        <p:outputPanel class="form" id="cubeSide">
+                            <p:dataTable id="cubeSides" var="cube" value="#{timeFlipDetailController.timeFlip.timeFlipConfiguration}" style="width: 800px !important; margin-bottom: 10px">
+                                <p:column headerText="Seite">
+                                    <h:outputText value="#{cube.key}"/>
+                                </p:column>
+                                <p:column headerText="Tätigkeit">
+                                    <h:outputText value="#{cube.value}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </p:outputPanel>
+                        <div class="dialog-buttons">
+                            <h:panelGrid columns="3">
+                                <p:commandButton value="Schließen" onclick="PF('cubeSideDialog').hide()"/>
+                            </h:panelGrid>
+                        </div>
+                    </p:dialog>
+
+                    <p:dialog header="Konfigurieren" id="cubeConfigDialog" class="dlg" widgetVar="cubeConfigDialog" modal="false"
+                              showEffect="fade" hideEffect="fade" resizable="false">
+                        <p:outputPanel class="form" id="cubeConfig" rendered="#{not empty timeFlipConfigurationController.timeFlip}">
+                            <div class="form-column">
+                            <p:fieldset id="availableTasksField" style="width: 500px">
+                                <p:dataTable id="availableTasks" var="task" value="#{timeFlipConfigurationController.taskList}" emptyMessage="Alle Tätigkeiten zugeteilt.">
+                                    <p:column style="width:22px" headerText="zieh mich">
+                                        <h:outputText id="dragIcon" styleClass="ui-icon pi pi-th-large" />
+                                        <p:draggable for="dragIcon" revert="true" helper="clone"/>
+                                    </p:column>
+
+                                    <p:column headerText="Tätigkeit">
+                                        <h:outputText value="#{task}" />
+                                    </p:column>
+
+                                </p:dataTable>
+                            </p:fieldset>
+                            </div>
+
+                            <div class="form-column">
+                            <p:fieldset id="side1" class="fieldset-config">
+                                <p:outputPanel id="dropArea1">
+                                    <p:outputLabel for="s1" value="Seite 1: "/>
+                                    <p:inputText id="s1" value="#{timeFlipConfigurationController.configuration.get(longToIntCastingBean.toInt(1))}" readonly="true" class="inputfield-config"/>
+                                </p:outputPanel>
+                            </p:fieldset>
+
+                            <p:droppable for="side1" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableTasks" onDrop="handleDrop">
+                                <p:ajax listener="#{timeFlipConfigurationController.onTaskDrop}" update="dropArea1 availableTasks" />
+                            </p:droppable>
+
+
+                            <p:fieldset id="side2" class="fieldset-config">
+                                <p:outputPanel id="dropArea2">
+                                    <p:outputLabel for="s2" value="Seite 2: "/>
+                                    <p:inputText id="s2" value="#{timeFlipConfigurationController.configuration.get(longToIntCastingBean.toInt(2))}" readonly="true" class="inputfield-config"/>
+                                </p:outputPanel>
+                            </p:fieldset>
+
+                                <p:droppable for="side2" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableTasks" onDrop="handleDrop">
+                                    <p:ajax listener="#{timeFlipConfigurationController.onTaskDrop}" update="dropArea2 availableTasks" />
+                                </p:droppable>
+
+                                <p:fieldset id="side3" class="fieldset-config">
+                                    <p:outputPanel id="dropArea3">
+                                        <p:outputLabel for="s3" value="Seite 3: "/>
+                                        <p:inputText id="s3" value="#{timeFlipConfigurationController.configuration.get(longToIntCastingBean.toInt(3))}" readonly="true" class="inputfield-config"/>
+                                    </p:outputPanel>
+                                </p:fieldset>
+
+                                <p:droppable for="side3" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableTasks" onDrop="handleDrop">
+                                    <p:ajax listener="#{timeFlipConfigurationController.onTaskDrop}" update="dropArea3 availableTasks" />
+                                </p:droppable>
+
+                                <p:fieldset id="side4" class="fieldset-config">
+                                    <p:outputPanel id="dropArea4">
+                                        <p:outputLabel for="s4" value="Seite 4: "/>
+                                        <p:inputText id="s4" value="#{timeFlipConfigurationController.configuration.get(longToIntCastingBean.toInt(4))}" readonly="true" class="inputfield-config"/>
+                                    </p:outputPanel>
+                                </p:fieldset>
+
+                                <p:droppable for="side4" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableTasks" onDrop="handleDrop">
+                                    <p:ajax listener="#{timeFlipConfigurationController.onTaskDrop}" update="dropArea4 availableTasks" />
+                                </p:droppable>
+                            </div>
+
+                            <div class="form-column">
+                                <p:fieldset id="side5" class="fieldset-config">
+                                    <p:outputPanel id="dropArea5">
+                                        <p:outputLabel for="s5" value="Seite 5: "/>
+                                        <p:inputText id="s5" value="#{timeFlipConfigurationController.configuration.get(longToIntCastingBean.toInt(5))}" readonly="true" class="inputfield-config"/>
+                                    </p:outputPanel>
+                                </p:fieldset>
+
+                                <p:droppable for="side5" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableTasks" onDrop="handleDrop">
+                                    <p:ajax listener="#{timeFlipConfigurationController.onTaskDrop}" update="dropArea5 availableTasks" />
+                                </p:droppable>
+
+                                <p:fieldset id="side6" class="fieldset-config">
+                                    <p:outputPanel id="dropArea6">
+                                        <p:outputLabel for="s6" value="Seite 6: "/>
+                                        <p:inputText id="s6" value="#{timeFlipConfigurationController.configuration.get(longToIntCastingBean.toInt(6))}" readonly="true" class="inputfield-config"/>
+                                    </p:outputPanel>
+                                </p:fieldset>
+
+                                <p:droppable for="side6" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableTasks" onDrop="handleDrop">
+                                    <p:ajax listener="#{timeFlipConfigurationController.onTaskDrop}" update="dropArea6 availableTasks" />
+                                </p:droppable>
+
+                                <p:fieldset id="side7" class="fieldset-config">
+                                    <p:outputPanel id="dropArea7">
+                                        <p:outputLabel for="s7" value="Seite 7: "/>
+                                        <p:inputText id="s7" value="#{timeFlipConfigurationController.configuration.get(longToIntCastingBean.toInt(7))}" readonly="true" class="inputfield-config"/>
+                                    </p:outputPanel>
+                                </p:fieldset>
+
+                                <p:droppable for="side7" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableTasks" onDrop="handleDrop">
+                                    <p:ajax listener="#{timeFlipConfigurationController.onTaskDrop}" update="dropArea7 availableTasks" />
+                                </p:droppable>
+
+                                <p:fieldset id="side8" class="fieldset-config">
+                                    <p:outputPanel id="dropArea8">
+                                        <p:outputLabel for="s8" value="Seite 8: "/>
+                                        <p:inputText id="s8" value="#{timeFlipConfigurationController.configuration.get(longToIntCastingBean.toInt(8))}" readonly="true" class="inputfield-config"/>
+                                    </p:outputPanel>
+                                </p:fieldset>
+
+                                <p:droppable for="side8" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableTasks" onDrop="handleDrop">
+                                    <p:ajax listener="#{timeFlipConfigurationController.onTaskDrop}" update="dropArea8 availableTasks" />
+                                </p:droppable>
+                            </div>
+
+                            <div class="form-column">
+                                <p:fieldset id="side9" class="fieldset-config">
+                                    <p:outputPanel id="dropArea9">
+                                        <p:outputLabel for="s9" value="Seite 9: "/>
+                                        <p:inputText id="s9" value="#{timeFlipConfigurationController.configuration.get(longToIntCastingBean.toInt(9))}" readonly="true" class="inputfield-config"/>
+                                    </p:outputPanel>
+                                </p:fieldset>
+
+                                <p:droppable for="side9" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableTasks" onDrop="handleDrop">
+                                    <p:ajax listener="#{timeFlipConfigurationController.onTaskDrop}" update="dropArea9 availableTasks" />
+                                </p:droppable>
+
+                                <p:fieldset id="side10" class="fieldset-config">
+                                    <p:outputPanel id="dropArea10">
+                                        <p:outputLabel for="s10" value="Seite 10: "/>
+                                        <p:inputText id="s10" value="#{timeFlipConfigurationController.configuration.get(longToIntCastingBean.toInt(10))}" readonly="true" class="inputfield-config"/>
+                                    </p:outputPanel>
+                                </p:fieldset>
+
+                                <p:droppable for="side10" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableTasks" onDrop="handleDrop">
+                                    <p:ajax listener="#{timeFlipConfigurationController.onTaskDrop}" update="dropArea10 availableTasks" />
+                                </p:droppable>
+
+                                <p:fieldset id="side11" class="fieldset-config">
+                                    <p:outputPanel id="dropArea11">
+                                        <p:outputLabel for="s11" value="Seite 11: "/>
+                                        <p:inputText id="s11" value="#{timeFlipConfigurationController.configuration.get(longToIntCastingBean.toInt(11))}" readonly="true" class="inputfield-config"/>
+                                    </p:outputPanel>
+                                </p:fieldset>
+
+                                <p:droppable for="side11" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableTasks" onDrop="handleDrop">
+                                    <p:ajax listener="#{timeFlipConfigurationController.onTaskDrop}" update="dropArea11 availableTasks" />
+                                </p:droppable>
+
+                                <p:fieldset id="side0" class="fieldset-config">
+                                    <p:outputPanel id="dropArea0">
+                                        <p:outputLabel for="s0" value="Seite 0: "/>
+                                        <p:inputText id="s0" value="#{timeFlipConfigurationController.configuration.get(longToIntCastingBean.toInt(0))}" readonly="true" class="inputfield-config"/>
+                                    </p:outputPanel>
+                                </p:fieldset>
+
+                                <p:droppable for="side0" tolerance="touch" activeStyleClass="ui-state-highlight" datasource="availableTasks" onDrop="handleDrop">
+                                    <p:ajax listener="#{timeFlipConfigurationController.onTaskDrop}" update="dropArea0 availableTasks" />
+                                </p:droppable>
+
+                            </div>
+
+
+                        </p:outputPanel>
+                        <div class="dialog-buttons">
+                            <h:panelGrid columns="3">
+                                <p:commandButton value="Speichern" action="#{timeFlipConfigurationController.doSaveTimeFlip}"
+                                                 oncomplete="PF('configSuccessful').show(), PF('cubeConfigDialog').hide()"
+                                                 update=":cubeForm:cubeTable"/>
+                                <p:commandButton value="Abbrechen" onclick="PF('cubeConfigDialog').hide(), location.reload()"/>
+                            </h:panelGrid>
+                        </div>
+                    </p:dialog>
+
+                    <p:dialog header="Neuen Würfel erstellen" id="newCubeDialog" widgetVar="newCubeDialog"
+                              modal="false"
+                              showEffect="fade" hideEffect="fade" resizable="false">
+                        <p:outputPanel class="form" id="newCubeData">
+                            <p:outputLabel class="text" value="ID" for="ID"/>
+                            <div class="ui-inputgroup">
+                                <p:inputText id="ID" value="#{timeFlipCreationController.timeFlipId}" readonly="true"/>
+                            </div>
+                            <p:outputLabel class="text" value="Hinzugefügt von" for="createuser"/>
+                            <div class="ui-inputgroup">
+                                <p:inputText id="createuser" value="#{sessionInfoBean.currentUser}"
+                                             readonly="true"/>
+                            </div>
+
+                            <p:outputLabel class="text" value="MAC-Adresse" for="macadr"/>
+                            <div class="ui-inputgroup">
+                                <p:inputMask id="macadr" value="#{timeFlipCreationController.timeFlip.macAddress}" mask="**-**-**-**-**-**">
+                                    <p:ajax event="blur" listener="#{timeFlipCreationController.validateMACAddress}"
+                                            update="saveButton growl"/>
+                                </p:inputMask>
+                            </div>
+
+                            <p:outputLabel class="text" value="Hinzugefügt am" for="date"/>
+                            <div class="ui-inputgroup">
+                                <p:inputText id="date" value="#{sessionInfoBean.currentDate}"
+                                             readonly="true">
+                                    <f:convertDateTime pattern="dd.MM.yyyy 'um' HH:mm" timeZone="GMT+2"/>
+                                </p:inputText>
+                            </div>
+
+                            <p:outputLabel class="text" value="Benutzer" for="nuser"/>
+                            <div class="ui-inputgroup">
+                                <p:selectOneMenu id="nuser" value="#{timeFlipCreationController.selectedUser}" label="Benutzer" filter="true" filterMatchMode="contains">
+                                    <f:selectItem itemLabel="Keinen Benutzer wählen" itemValue="noUser" />
+                                    <f:selectItems value="#{timeFlipCreationController.availableUser}"/>
+                                </p:selectOneMenu>
+                            </div>
+
+                        </p:outputPanel>
+                        <div class="dialog-buttons">
+                            <p:commandButton value="Erstellen" id="saveButton"
+                                             action="#{timeFlipCreationController.doSaveTimeFlip()}"
+                                             oncomplete="PF('creatingSuccessful').show(), PF('newCubeDialog').hide()" disabled="#{timeFlipCreationController.disableSaveButton}"/>
+                        </div>
+                        <p:growl id="growl" sticky="true" showDetail="true"/>
+                    </p:dialog>
+
+
+                    <h:form>
+                        <p:confirmDialog global="true" modal="false" showEffect="fade" hideEffect="fade"
+                                         resizable="false">
+                            <p:commandButton value="Ja" type="button" styleClass="ui-confirmdialog-yes"
+                                             icon="pi pi-check"/>
+                            <p:commandButton value="Nein" type="button" styleClass="ui-confirmdialog-no"
+                                             icon="pi pi-times"/>
+                        </p:confirmDialog>
+                    </h:form>
+
+                    <h:form>
+                        <p:dialog header="Erfolg" id="creatingSuccessful" widgetVar="creatingSuccessful" modal="false"
+                                  showEffect="fade"
+                                  hideEffect="fade" resizable="false" onHide="location.reload()">
+                            <h:panelGrid columns="1" style="text-align: center">
+                                <h:outputText value="TimeFlip erfolgreich erstellt."/>
+                                <p:commandButton value="Ok" id="comfirmButton"
+                                                 oncomplete="location.reload()"/>
+                            </h:panelGrid>
+                        </p:dialog>
+                    </h:form>
+
+                    <h:form>
+                        <p:dialog header="Erfolg" id="configSuccessful" widgetVar="configSuccessful" modal="false"
+                                  showEffect="fade"
+                                  hideEffect="fade" resizable="false" onHide="location.reload()">
+                            <h:panelGrid columns="1" style="text-align: center">
+                                <h:outputText value="Seiten erfolgreich konfiguriert."/>
+                                <p:commandButton value="Ok" id="comfirmButton2"
+                                                 oncomplete="location.reload()"/>
+                            </h:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

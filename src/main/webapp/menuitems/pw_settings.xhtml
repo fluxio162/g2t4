@@ -1,0 +1,36 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name="content">
+        <h:outputStylesheet name="settings.css" library="css"/>
+        <div class="outer">
+            <div class="inner">
+                <p:link value="Zurück" outcome="settings.xhtml"/>
+                <h:outputText value="Passwort-Änderung"/>
+                <h:form>
+
+                    <h:panelGrid columns="2" id="match" cellpadding="5">
+
+                        <p:outputLabel for="pwd1" value="Password 1: " />
+                        <p:password id="pwd1" value="#{sessionInfoBean.currentUser.password}" match="pwd2" label="Passwort 1" required="true" feedback="true" requiredMessage="Passwort kann nicht übernommen werden: Wert ist erforderlich."/>
+
+                        <p:outputLabel for="pwd2" value="Password 2: " />
+                        <p:password id="pwd2" value="#{sessionInfoBean.currentUser.password}" label="Passwort 2" required="true" requiredMessage="Passwort kann nicht übernommen werden: Wert ist erforderlich."/>
+                    </h:panelGrid>
+
+
+                    <p:commandButton icon="pi pi-save" styleClass="white-button" value="Speichern" update="match growl">
+                        <f:actionListener binding="#{userSettingsController.saveNewPassword(sessionInfoBean.currentUser)}"/>
+                    </p:commandButton>
+                    <p:growl id="growl" sticky="true" showDetail="false"/>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

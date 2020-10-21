@@ -1,0 +1,32 @@
+body {
+    background-image: url("/images/Background.jpg");
+    background-size: cover;
+    font-family: Oswald, sans-serif !important;
+    margin: 0;
+}
+
+.content {
+    margin-top: 1% !important;
+    margin-left: 1% !important;
+    margin-right: 1% !important;
+}
+
+.footer {
+    margin-left: 16%;
+    margin-right: 1%;
+}
+
+.header {
+    background-color: #323232;
+    border: 0 !important;
+    margin: 0 !important;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+#header_logo_form {
+    width: 25vh;
+    text-align: center;
+}

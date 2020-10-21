@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name="content">
+        <h:outputStylesheet name="roomManagement.css" library="css"/>
+        <div class="outer">
+            <div class="inner">
+                <h:outputText id="heading" value="Geben Sie eine Nummer ein, um nach einem Raum zu suchen:"/>
+
+                <h:form id="roomForm">
+                    <p:dataTable id="roomTable" var="room" value="#{roomListController.roomListMap}" widgetVar="roomTable"
+                                 emptyMessage="Kein Raum gefunden."
+                                 filteredValue="#{roomListController.filteredRooms}"
+                                 rows="10"
+                                 paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                                 rowsPerPageTemplate="5,10,15"
+                                 paginatorPosition="bottom">
+                        <f:facet name="header">
+                            <p:outputPanel>
+                                <p:inputText class="filter-field" id="globalFilter" onkeyup="PF('roomTable').filter()"
+                                             placeholder="Suchbegriff..."/>
+                            </p:outputPanel>
+                        </f:facet>
+
+
+                        <p:column class="management-column" headerText="Raumnummer" filterBy="#{room.key.roomId}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{room.key.roomId}"/>
+                        </p:column>
+                        <p:column headerText="Miniserver" filterBy="#{room.key.miniserver}" filterStyle="display:none" filterMatchMode="contains">
+                            <h:outputText value="#{room.key.miniserver}"/>
+                        </p:column>
+
+                        <p:column headerText="User" filterBy="#{room.value}" filterStyle="display:none" filterMatchMode="contains">
+                            <h:outputText value="#{room.value}"/>
+                        </p:column>
+
+                        <p:column headerText="Würfel" filterBy="#{roomListController.getTimeFlips(room.value)}" filterStyle="display:none" filterMatchMode="contains">
+                            <h:outputText value="#{roomListController.getTimeFlips(room.value)}"/>
+                        </p:column>
+
+                        <p:column style="width:100px;text-align: center">
+                            <p:commandButton action="#{roomDetailController.doDeleteRoom}" icon="pi pi-trash"
+                                             title="Löschen" update=":roomForm:roomTable">
+                                <f:setPropertyActionListener value="#{room.key}" target="#{roomDetailController.room}"/>
+                                <p:confirm header="Bestätigung"
+                                           message="Sind Sie sicher, dass sie diesen Raum löschen wollen? Die Aktion kann nicht rückgängig gemacht werden"
+                                           icon="pi pi-info-circle"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                    <div class="newRoom">
+                        <p:commandButton class="newRoom-button" oncomplete="PF('newRoomDialog').show()"
+                                         value="Raum hinzufügen" icon="pi pi-plus">
+                        </p:commandButton>
+                    </div>
+
+
+                    <p:dialog header="Neuen Raum erstellen" id="newRoomDialog" class="dlg" widgetVar="newRoomDialog"
+                              modal="false"
+                              showEffect="fade" hideEffect="fade" resizable="false">
+                        <p:outputPanel class="form" id="newRoomData">
+                            <p:outputLabel class="text" value="ID" for="ID"/>
+                            <div class="ui-inputgroup">
+                                <p:inputText id="ID" value="#{roomCreationController.roomId}" readonly="true"/>
+                            </div>
+                            <p:outputLabel class="text" value="Hinzugefügt von" for="createuser"/>
+                            <div class="ui-inputgroup">
+                                <p:inputText id="createuser" value="#{sessionInfoBean.currentUser}"
+                                             readonly="true"/>
+                            </div>
+
+                            <p:outputLabel class="text" value="Hinzugefügt am" for="date"/>
+                            <div class="ui-inputgroup">
+                                <p:inputText id="date" value="#{sessionInfoBean.currentDate}"
+                                             readonly="true">
+                                    <f:convertDateTime pattern="dd.MM.yyyy 'um' HH:mm" timeZone="GMT+2"/>
+                                </p:inputText>
+                            </div>
+
+                            <p:outputLabel class="text" value="Miniserver" for="server"/>
+                            <div class="ui-inputgroup">
+                                <p:selectOneMenu id="server" value="#{roomCreationController.selectedMiniserver}" label="Miniserver" filter="true" filterMatchMode="contains">
+                                    <f:selectItem itemLabel="Keinen Miniserver wählen" itemValue="noMiniserver" />
+                                    <f:selectItems value="#{roomCreationController.availableMiniserver}"/>
+                                </p:selectOneMenu>
+                            </div>
+                        </p:outputPanel>
+                        <div class="dialog-buttons">
+                            <p:commandButton value="Erstellen" id="saveButton"
+                                             action="#{roomCreationController.doSaveRoom}"
+                                             oncomplete="PF('creatingSuccessful').show(), PF('newRoomDialog').hide()"
+                                             update=":roomForm:roomTable"/>
+                        </div>
+                    </p:dialog>
+
+
+                    <h:form>
+                        <p:confirmDialog global="true" modal="false" showEffect="fade" hideEffect="fade"
+                                         resizable="false">
+                            <p:commandButton value="Ja" type="button" styleClass="ui-confirmdialog-yes"
+                                             icon="pi pi-check"/>
+                            <p:commandButton value="Nein" type="button" styleClass="ui-confirmdialog-no"
+                                             icon="pi pi-times"/>
+                        </p:confirmDialog>
+                    </h:form>
+
+                    <h:form>
+                        <p:dialog header="Erfolg" id="creatingSuccessful" widgetVar="creatingSuccessful" modal="false"
+                                  showEffect="fade"
+                                  hideEffect="fade" resizable="false" onHide="location.reload()">
+                            <h:panelGrid columns="1" style="text-align: center">
+                                <h:outputText value="Raum erfolgreich erstellt."/>
+                                <p:commandButton value="Ok" id="comfirmButton"
+                                                 oncomplete="location.reload()"/>
+                            </h:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

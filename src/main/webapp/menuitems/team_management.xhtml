@@ -1,0 +1,156 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name="content">
+        <h:outputStylesheet name="teamManagement.css" library="css"/>
+        <div class="outer">
+            <div class="inner">
+                <h:outputText id="heading" value="Geben Sie einen Namen ein, um das Team bearbeiten zu können:"/>
+
+                <h:form id="teamForm">
+                    <p:dataTable id="teamTable" var="team" value="#{teamListController.teams}" widgetVar="teamTable"
+                                 emptyMessage="Kein Team gefunden."
+                                 filteredValue="#{teamListController.filteredTeams}"
+                                 rows="10"
+                                 paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                                 rowsPerPageTemplate="5,10,15"
+                                 paginatorPosition="bottom">
+                        <f:facet name="header">
+                            <p:outputPanel>
+                                <p:inputText class="filter-field" id="globalFilter" onkeyup="PF('teamTable').filter()"
+                                             placeholder="Suchbegriff..."/>
+                            </p:outputPanel>
+                        </f:facet>
+
+                        <p:column class="management-column" headerText="Team" filterBy="#{team.teamName}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{team.teamName}"/>
+                        </p:column>
+
+                        <p:column class="management-column" headerText="TeamleiterIn" filterBy="#{team.teamLeader}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{team.teamLeader}"/>
+                        </p:column>
+
+                        <p:column class="management-column" headerText="TeammitgliederInnen" filterBy="#{team.teamMember}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{team.teamMember}"/>
+                        </p:column>
+
+                        <p:column style="width:100px;text-align: center">
+                            <p:commandButton update=":teamForm:teamEditDialog" icon="pi pi-pencil"
+                                             oncomplete="PF('teamEditDialog').show()" title="Bearbeiten">
+                                <f:setPropertyActionListener value="#{team}" target="#{teamDetailController.team}"/>
+                            </p:commandButton>
+                            <p:commandButton action="#{teamDetailController.doDeleteTeam}" icon="pi pi-trash"
+                                             title="Löschen" update=":teamForm:teamTable">
+                                <f:setPropertyActionListener value="#{team}" target="#{teamDetailController.team}"/>
+                                <p:confirm header="Bestätigung"
+                                           message="Sind Sie sicher, dass sie dieses Team löschen wollen? Die Aktion kann nicht rückgängig gemacht werden"
+                                           icon="pi pi-info-circle"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                    <div class="newTeam">
+                        <p:commandButton class="newTeam-button" oncomplete="PF('newTeamDialog').show()"
+                                         value="Team hinzufügen" icon="pi pi-plus">
+
+                        </p:commandButton>
+                    </div>
+
+                    <p:dialog header="Bearbeiten" id="teamEditDialog" class="dlg" widgetVar="teamEditDialog" modal="false"
+                              showEffect="fade" hideEffect="fade" resizable="false">
+                        <p:outputPanel class="form" id="teamData" rendered="#{not empty teamDetailController.team}">
+                                <p:outputLabel class="text" value="Teamleiter" for="teamleader"/>
+                                <div class="ui-inputgroup">
+                                    <p:selectOneMenu id="teamleader" value="#{teamDetailController.selectedUser}" label="Teamleiter" filter="true" filterMatchMode="contains">
+                                        <f:selectItem itemLabel="#{teamDetailController.currentUser}" itemDisabled="true" />
+                                        <f:selectItems value="#{teamDetailController.availableUser}"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                        </p:outputPanel>
+                        <div class="dialog-buttons">
+                            <h:panelGrid columns="3">
+                                <p:commandButton value="Speichern" action="#{teamDetailController.doSaveTeam()}"
+                                                 oncomplete="PF('teamEditDialog').hide(), location.reload()"
+                                                 update=":teamForm:teamTable"/>
+                                <p:commandButton value="Neu laden" action="#{teamDetailController.doReloadTeam()}"
+                                                 update=":teamForm:teamData"/>
+                                <p:commandButton value="Abbrechen" onclick="PF('teamEditDialog').hide()"/>
+                            </h:panelGrid>
+                        </div>
+                    </p:dialog>
+
+                    <p:dialog header="Neues Team erstellen" id="newTeamDialog" class="dlg" widgetVar="newTeamDialog"
+                              modal="false"
+                              showEffect="fade" hideEffect="fade" resizable="false">
+                        <p:outputPanel class="form" id="newTeamData">
+                                <p:outputLabel class="text" value="Teamname" for="teamName"/>
+                                <div class="ui-inputgroup">
+                                    <p:inputText id="teamName" value="#{teamCreationController.team.teamName}">
+                                        <p:ajax event="blur" listener="#{teamCreationController.validateTeamName}"
+                                                update="saveButton"/>
+                                    </p:inputText>
+                                </div>
+
+                                <p:outputLabel class="text" value="Teamleiter" for="teamLeader"/>
+                                <div class="ui-inputgroup">
+                                    <p:selectOneMenu id="teamLeader" value="#{teamCreationController.selectedUser}" label="Teamleiter" filter="true" filterMatchMode="contains">
+                                        <f:selectItem itemLabel="Nicht wählen" itemValue=""/>
+                                        <f:selectItems value="#{teamCreationController.availableUser}"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <p:outputLabel class="text" value="Hinzugefügt von" for="createuser"/>
+                                <div class="ui-inputgroup">
+                                    <p:inputText id="createuser" value="#{sessionInfoBean.currentUser}"
+                                                 readonly="true"/>
+                                </div>
+
+                        </p:outputPanel>
+                        <div class="dialog-buttons">
+                            <p:commandButton value="Erstellen" id="saveButton"
+                                             action="#{teamCreationController.doSaveTeam()}"
+                                             oncomplete="PF('creatingSuccessful').show(), PF('newTeamDialog').hide()"
+                                             disabled="#{teamCreationController.disableSaveButton}"/>
+                        </div>
+                    </p:dialog>
+
+
+                    <h:form>
+                        <p:confirmDialog global="true" modal="false" showEffect="fade" hideEffect="fade"
+                                         resizable="false">
+                            <p:commandButton value="Ja" type="button" styleClass="ui-confirmdialog-yes"
+                                             icon="pi pi-check"/>
+                            <p:commandButton value="Nein" type="button" styleClass="ui-confirmdialog-no"
+                                             icon="pi pi-times"/>
+                        </p:confirmDialog>
+                    </h:form>
+
+
+
+                    <h:form>
+                        <p:dialog header="Erfolg" id="creatingSuccessful" widgetVar="creatingSuccessful" modal="false"
+                                  showEffect="fade"
+                                  hideEffect="fade" resizable="false" onHide="location.reload()">
+                            <h:panelGrid columns="1" style="text-align: center">
+                                <h:outputText value="Team erfolgreich erstellt."/>
+                                <p:commandButton value="Ok" id="comfirmButton"
+                                                 oncomplete="location.reload()"/>
+                            </h:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,123 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name="content">
+        <h:outputStylesheet name="vacationCreation.css" library="css"/>
+        <div class="outer">
+            <div class="inner">
+                <!-- including javascript to make the calendar german (and to set monday is the start of the week) -->
+                <script type="text/javascript">
+                    PrimeFaces.locales['de'] = {
+                        monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'],
+                        dayNamesMin: ['So', 'Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa'],
+                        firstDay: 1,
+                    };
+                </script>
+                <div class="heading">
+                    <h:outputText id="heading" value="Nachstehend können Sie Ihren Urlaub beantragen"/>
+                </div>
+                <h:form id="form">
+
+                    <div class="ui-inputgroup">
+                        <p:growl id="growl" showDetail="true" sticky="true"/>
+
+                        <div>
+                            <p:outputLabel for="inline"/>
+                            <p:calendar id="inline" locale="de" mode="inline"/>
+                        </div>
+                        <div id="input-fields">
+                            <p:outputLabel for="popup"/>
+                            <p:datePicker id="popup" locale="de" value="#{vacationCreationController.startDate}"
+                                          placeholder="Startdatum"/>
+                            <div>
+                                <p:outputLabel for="popup1"/>
+                                <p:datePicker id="popup1" locale="de" value="#{vacationCreationController.endDate}"
+                                              placeholder="Enddatum"/>
+                            </div>
+                            <div id="save-button">
+                                <p:commandButton value="Speichern"
+                                                 action="#{vacationCreationController.doSaveVacation()}"
+                                                 oncomplete="PF('dlg').show()"
+                                                 update="form">
+                                    <f:setPropertyActionListener value="#{vacationCreationController}"
+                                                                 target="#{vacationCreationController}"/>
+                                </p:commandButton>
+                            </div>
+                        </div>
+                        <p:dataTable var="holiday" value="#{austrianHolidayController.holiday}">
+                            <p:column headerText="Feiertag">
+                            <h:outputText value="#{holiday.key}"/>
+                        </p:column>
+                            <p:column headerText="Datum">
+                                <h:outputText value="#{holiday.value}">
+                                    <f:convertDateTime pattern="dd.MM.yyyy"/>
+                                </h:outputText>
+                            </p:column>
+                        </p:dataTable>
+                    </div>
+
+                    <div class="small-heading"> <h:outputText
+                                        value="Sie erhalten nach der Bestätigung durch einen Vorgesetzten eine E-Mail."/></div>
+
+                    <h:form id="vacationListForm">
+                        <p:dataTable id="vacationTable" var="vacation" value="#{vacationListController.vacation}"
+                                     widgetVar="vacationTable"
+                                     emptyMessage="Keine Daten gefunden."
+                                     filteredValue="#{vacationListController.filteredVacations}"
+                                     rows="10"
+                                     paginator="true"
+                                     paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                     currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                                     rowsPerPageTemplate="5,10,15"
+                                     paginatorPosition="bottom">
+                            <f:facet name="header">
+                                <p:outputPanel>
+                                    <p:inputText class="filter-field" id="globalFilter" onkeyup="PF('vacationTable').filter()"
+                                                 placeholder="Suchbegriff..."/>
+                                </p:outputPanel>
+                            </f:facet>
+                            <p:column headerText="ID der Anfrage" filterBy="#{vacation.id}" filterStyle="display:none"
+                                      filterMatchMode="contains">
+                                <h:outputText value="#{vacation.id}"/>
+                            </p:column>
+
+                            <p:column headerText="Von" filterBy="#{vacation.id}" filterStyle="display:none"
+                                      filterMatchMode="contains">
+                                <h:outputText value="#{vacation.vacationStart}">
+                                    <f:convertDateTime pattern="dd.MM.yyyy"/>
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Bis" filterBy="#{vacation.id}" filterStyle="display:none"
+                                      filterMatchMode="contains">
+                                <h:outputText value="#{vacation.vacationEnd}">
+                                    <f:convertDateTime pattern="dd.MM.yyyy"/>
+                                </h:outputText>
+                            </p:column>
+
+                            <p:column headerText="Status" filterBy="#{vacation.id}" filterStyle="display:none"
+                                      filterMatchMode="contains">
+                                <h:outputText value="#{vacation.status}"/>
+                            </p:column>
+                        </p:dataTable>
+                    </h:form>
+                    <h:form>
+                        <p:dialog header="Information" id="dlg" widgetVar="dlg" modal="false" showEffect="fade"
+                                  hideEffect="fade" resizable="false"
+                                  rendered="#{not empty vacationCreationController.dlgMessage}">
+                            <h:outputText value="#{vacationCreationController.dlgMessage}"/>
+                            <p:ajax event="close" oncomplete="location.reload()"/>
+                        </p:dialog>
+                    </h:form>
+                </h:form>
+            </div>
+        </div>
+
+    </ui:define>
+</ui:composition>

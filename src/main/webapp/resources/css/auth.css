@@ -1,0 +1,12 @@
+.ui-messages .ui-messages-info{
+    background-color: #323232 !important;
+    color: white !important;
+}
+
+.ui-messages .ui-messages-info-icon{
+    color: white !important;
+}
+
+.ui-messages .ui-messages-info-detail{
+    color: white !important;
+}

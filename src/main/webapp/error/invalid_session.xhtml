@@ -1,0 +1,21 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/noMenu.xhtml">
+    <ui:define name ="content">
+
+        <h:outputStylesheet name="errorPages.css" library="css"/>
+        <div class="outer">
+            <div class="inner">
+                <h:graphicImage id="logo" value="/images/SessionExpired.png"/>
+                <h1 id="first-info">Sitzung abgelaufen.</h1>
+                <h3 id="second-info">Ihre Sitzung ist abgelaufen, bitte melden Sie sich erneut an.</h3>
+                <p:link class="link" value="Hier geht's zum Login..." outcome="/login.xhtml"/>
+            </div>
+        </div>
+
+    </ui:define>
+</ui:composition>

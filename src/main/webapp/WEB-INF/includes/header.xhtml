@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+        <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+<body>
+<ui:composition>
+    <div id="header">
+        <p:link href="/menuitems/dashboard.xhtml" rendered="#{sessionInfoBean.loggedIn}">
+            <h:graphicImage id="header_logo_form" value = "/images/Logo_TimeManager_Header.png" rendered="#{sessionInfoBean.loggedIn}" style="padding-top: 1%; padding-bottom: 0.5%; padding-left: 1%"/>
+        </p:link>
+    </div>
+</ui:composition>
+</body>
+</html>
+

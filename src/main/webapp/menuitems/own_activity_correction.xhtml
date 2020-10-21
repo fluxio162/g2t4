@@ -1,0 +1,134 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name="content">
+        <h:outputStylesheet name="activityManagement.css" library="css"/>
+        <div class="outer">
+            <div class="inner">
+                <h:outputText id="heading" value="Klicken Sie auf bearbeiten, um eine Aktivität zu korrigieren."/>
+
+                <h:form id="taskForm">
+                    <p:dataTable id="tasksTable" var="task" value="#{taskListController.userTasks}" widgetVar="taskTable"
+                                 emptyMessage="Keine Aktivität gefunden."
+                                 filteredValue="#{taskListController.filteredTasks}"
+                                 rows="10"
+                                 paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} Einträge"
+                                 rowsPerPageTemplate="5,10,15"
+                                 paginatorPosition="bottom">
+                        <f:facet name="header">
+                            <p:outputPanel>
+                                <p:inputText class="filter-field" id="globalFilter" onkeyup="PF('taskTable').filter()"
+                                             placeholder="Suchbegriff..."/>
+                            </p:outputPanel>
+                        </f:facet>
+
+
+                        <p:column headerText="Datum" filterBy="#{task.taskStart}" filterStyle="display:none" sortBy="#{task.taskStart}" filterMatchMode="contains">
+                            <h:outputText value="#{task.taskStart}">
+                                <f:convertDateTime pattern="dd.MM.yyyy"/>
+                            </h:outputText>
+                        </p:column>
+
+                        <p:column headerText="Kategorie" filterBy="#{task.taskCategory}" filterStyle="display:none" filterMatchMode="contains">
+                            <h:outputText value="#{task.taskCategory}"/>
+                        </p:column>
+
+                        <p:column headerText="Beginn" filterBy="#{task.taskStart}" filterStyle="display:none" filterMatchMode="contains">
+                            <h:outputText value="#{task.taskStart}">
+                                <f:convertDateTime pattern="HH:mm"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column headerText="Ende" filterBy="#{task.taskStart}" filterStyle="display:none" filterMatchMode="contains">
+                            <h:outputText value="#{task.taskEnd}">
+                                <f:convertDateTime pattern="HH:mm"/>
+                            </h:outputText>
+                        </p:column>
+
+
+                        <p:column style="width:100px;text-align: center">
+                            <p:commandButton update=":taskForm:taskEditDialog" icon="pi pi-pencil"
+                                             oncomplete="PF('taskEditDialog').show()" title="Bearbeiten">
+                                <f:setPropertyActionListener value="#{task}" target="#{taskDetailController.task}"/>
+                            </p:commandButton>
+                            <p:commandButton action="#{taskDetailController.doDeleteTask}" icon="pi pi-trash"
+                                             title="Löschen" update=":taskForm:tasksTable">
+                                <f:setPropertyActionListener value="#{task}" target="#{taskDetailController.task}"/>
+                                <p:confirm header="Bestätigung"
+                                           message="Sind Sie sicher, dass sie diesen Benutzer löschen wollen? Die Aktion kann nicht rückgängig gemacht werden"
+                                           icon="pi pi-info-circle"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+
+                    <p:dialog header="Bearbeiten" id="taskEditDialog" class="dlg" widgetVar="taskEditDialog" modal="false"
+                              showEffect="fade" hideEffect="fade" resizable="false">
+                        <p:outputPanel class="form" id="taskData" rendered="#{not empty taskDetailController.task}">
+
+                            <p:outputLabel for="taskCategoryCurrent" value="Aktivitätskategorie" />
+                            <div class="ui-inputgroup">
+                                <p:inputText id="taskCategoryCurrent" value="#{taskDetailController.task.taskCategory}" readonly="true"/>
+                            </div>
+
+                            <p:outputLabel for="taskCategory" value="Korrektur" />
+                            <div class="ui-inputgroup">
+                            <p:selectOneMenu id="taskCategory" value="#{taskDetailController.selectedTaskCategory}" label="TaskCategory" filter="true" filterMatchMode="contains">
+                                <f:selectItem itemLabel="#{taskDetailController.selectedTaskCategory}" itemDisabled="false" />
+                                <f:selectItems value="#{taskDetailController.taskCategories}"/>
+                            </p:selectOneMenu>
+                            </div>
+
+                            <p:outputLabel for="dateStartCurrent" value="Beginn" />
+                            <div class="ui-inputgroup">
+                                <p:calendar id="dateStartCurrent" value="#{taskDetailController.task.taskStart}" readonly="true" pattern="dd/MM/yyyy HH:mm" disabled="true" timeZone="GMT"/>
+                            </div>
+
+                            <p:outputLabel for="dateStart" value="Korrektur" />
+                            <div class="ui-inputgroup">
+                                <p:calendar id="dateStart" value="#{taskDetailController.taskStart}" pattern="dd/MM/yyyy HH:mm" timeZone="GMT"/>
+                            </div>
+
+                                <p:outputLabel for="dateEndCurrent" value="Ende" />
+                                <div class="ui-inputgroup">
+                                    <p:calendar id="dateEndCurrent" value="#{taskDetailController.task.taskEnd}" readonly="true" pattern="dd/MM/yyyy HH:mm" disabled="true" timeZone="GMT"/>
+                                </div>
+
+                                <p:outputLabel for="dateEnd" value="Korrektur:" />
+                                <div class="ui-inputgroup">
+                                    <p:calendar id="dateEnd" value="#{taskDetailController.taskEnd}" pattern="dd/MM/yyyy HH:mm" timeZone="GMT"/>
+                                </div>
+
+                        </p:outputPanel>
+                        <div class="dialog-buttons">
+                            <h:panelGrid columns="3">
+                                <p:commandButton value="Speichern" action="#{taskDetailController.doSaveTask()}"
+                                                 oncomplete="PF('taskEditDialog').hide(), location.reload()"
+                                                 update=":taskForm:tasksTable"/>
+                                <p:commandButton value="Neu laden" action="#{taskDetailController.doReloadTask()}"
+                                                 update=":taskForm:taskData"/>
+                                <p:commandButton value="Abbrechen" onclick="PF('taskEditDialog').hide()"/>
+                            </h:panelGrid>
+                        </div>
+                    </p:dialog>
+
+                    <h:form>
+                        <p:confirmDialog global="true" modal="false" showEffect="fade" hideEffect="fade"
+                                         resizable="false">
+                            <p:commandButton value="Ja" type="button" styleClass="ui-confirmdialog-yes"
+                                             icon="pi pi-check"/>
+                            <p:commandButton value="Nein" type="button" styleClass="ui-confirmdialog-no"
+                                             icon="pi pi-times"/>
+                        </p:confirmDialog>
+                    </h:form>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

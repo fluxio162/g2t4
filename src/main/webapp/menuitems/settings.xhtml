@@ -1,0 +1,161 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name="content">
+        <h:outputStylesheet name="settings.css" library="css"/>
+        <div class="outer">
+            <div class="inner">
+                <h:outputText value="Benutzer-Einstellungen"/>
+                <h:form id="form">
+                    <div class="form-column">
+                        <p:outputLabel class="text" value="Vorname"/>
+                        <div class="ui-inputgroup">
+                            <p:inputText placeholder="#{sessionInfoBean.currentUser.firstName}" readonly="true"/>
+                            <p:commandButton icon="pi pi-save" styleClass="disabled-button"
+                                             oncomplete="PF('changesUnsuccessful').show()"/>
+                        </div>
+
+                        <p:outputLabel class="text" value="Nachname"/>
+                        <div class="ui-inputgroup">
+                            <p:inputText placeholder="#{sessionInfoBean.currentUser.lastName}" readonly="true"/>
+                            <p:commandButton icon="pi pi-save" styleClass="disabled-button"
+                                             oncomplete="PF('changesUnsuccessful').show()"/>
+                        </div>
+
+                        <p:outputLabel class="ext" value="E-Mail-Adresse" for="email"/>
+                        <div class="ui-inputgroup">
+                            <p:inputText id="email" placeholder="#{sessionInfoBean.currentUser.email}"
+                                         value="#{sessionInfoBean.currentUser.email}"/>
+                            <p:commandButton icon="pi pi-save" styleClass="white-button"
+                                             oncomplete="PF('changesSuccessful').show()">
+                                <f:actionListener
+                                        binding="#{userSettingsController.saveUser(sessionInfoBean.currentUser)}"/>
+                            </p:commandButton>
+                        </div>
+
+                        <p:outputLabel class="text" value="Telefonnummer" for="phone"/>
+                        <div class="ui-inputgroup">
+                            <p:inputText id="phone" placeholder="#{sessionInfoBean.currentUser.phone}"
+                                         value="#{sessionInfoBean.currentUser.phone}"/>
+                            <p:commandButton icon="pi pi-save" styleClass="white-button"
+                                             oncomplete="PF('changesSuccessful').show()">
+                                <f:actionListener
+                                        binding="#{userSettingsController.saveUser(sessionInfoBean.currentUser)}"/>
+                            </p:commandButton>
+                        </div>
+                        <p:outputLabel class="text" value="Geburtsdatum" for="birthday"/>
+                        <div class="ui-inputgroup">
+                            <p:inputText id="birthday" value="#{sessionInfoBean.currentUser.birthDay}"
+                                         style="color: #a6a6a6" readonly="true">
+                                <f:convertDateTime pattern="dd.MM.yyyy"/>
+                            </p:inputText>
+                            <p:commandButton icon="pi pi-save" styleClass="disabled-button"
+                                             oncomplete="PF('changesUnsuccessful').show()">
+                            </p:commandButton>
+                        </div>
+                    </div>
+                    <div class="form-column">
+                        <p:outputLabel class="text" value="Benutzername" for="username"/>
+                        <div class="ui-inputgroup">
+                            <p:inputText id="username" placeholder="#{sessionInfoBean.currentUser.username}"
+                                         readonly="true"/>
+                            <p:commandButton icon="pi pi-save" styleClass="disabled-button"
+                                             oncomplete="PF('changesUnsuccessful').show()"/>
+                        </div>
+
+
+                        <p:outputLabel class="text" value="Team"/>
+                        <div class="ui-inputgroup">
+                            <p:inputText placeholder="#{sessionInfoBean.currentUser.team}" readonly="true"/>
+                            <p:commandButton icon="pi pi-save" styleClass="disabled-button"
+                                             oncomplete="PF('changesUnsuccessful').show()"/>
+                        </div>
+
+                        <p:outputLabel class="text" value="Abteilung"/>
+                        <div class="ui-inputgroup">
+                            <p:inputText placeholder="#{sessionInfoBean.currentUser.department}" readonly="true"/>
+                            <p:commandButton icon="pi pi-save" styleClass="disabled-button"
+                                             oncomplete="PF('changesUnsuccessful').show()"/>
+                        </div>
+
+                        <p:outputLabel class="text" value="Würfel"/>
+                        <div class="ui-inputgroup">
+                            <p:inputText placeholder="#{sessionInfoBean.currentUser.timeFlip.timeFlipId}"
+                                         readonly="true"/>
+                            <p:commandButton icon="pi pi-save" styleClass="disabled-button"
+                                             oncomplete="PF('changesUnsuccessful').show()"/>
+                        </div>
+                        <p:outputLabel class="text" value="E-Mail-Benachrichtigungen" for="notification"/>
+                        <div class="ui-inputgroup">
+                            <p:selectOneMenu id="notification" label="E-Mail-Benachrichtigungen" value="#{sessionInfoBean.currentUser.notificationCategory}">
+                                            >
+                                <f:selectItems value="#{userSettingsController.notificationCategories}"/>
+
+                            </p:selectOneMenu>
+                            <p:commandButton icon="pi pi-save" styleClass="white-button"
+                                             oncomplete="PF('changesSuccessful').show()">
+                                <f:actionListener
+                                        binding="#{userSettingsController.saveUser(sessionInfoBean.currentUser)}"/>
+                            </p:commandButton>
+                        </div>
+
+                    </div>
+                    <div class="form-column">
+                        <div id="roles-table">
+                            <p:outputLabel class="text" value="Rollen"/>
+                            <p:selectBooleanCheckbox class="roles-cell"
+                                                     value="#{sessionInfoBean.currentUserRoles.contains('ADMIN')}"
+                                                     disabled="true"
+                                                     itemLabel="Admin"/>
+                            <p:selectBooleanCheckbox class="roles-cell"
+                                                     value="#{sessionInfoBean.currentUserRoles.contains('DEPARTMENT_MANAGER')}"
+                                                     disabled="true"
+                                                     itemLabel="Abteilungsleiter"/>
+
+                            <p:selectBooleanCheckbox class="roles-cell"
+                                                     value="#{sessionInfoBean.currentUserRoles.contains('TEAM_LEADER')}"
+                                                     disabled="true"
+                                                     itemLabel="Teamleiter"/>
+                            <p:selectBooleanCheckbox class="roles-cell"
+                                                     value="#{sessionInfoBean.currentUserRoles.contains('EMPLOYEE')}"
+                                                     disabled="true"
+                                                     itemLabel="Angestellter"/>
+                        </div>
+                        <p:outputLabel class="text" value="Passwortänderung"/>
+                        <div class="ui-inputgroup">
+                            <p:commandButton value="Passwort ändern" icon="pi pi-cog"
+                                             action="pw_settings.xhtml?faces-redirect=true"/>
+                        </div>
+                    </div>
+                </h:form>
+
+            </div>
+        </div>
+        <h:form>
+            <p:dialog header="Erfolg" id="saveChanges" widgetVar="changesSuccessful" modal="false" showEffect="fade"
+                      hideEffect="fade" resizable="false">
+                <h:outputText value="Ihre Änderung wurde gespeichert."/>
+                <p:ajax event="close" update="form"/>
+            </p:dialog>
+        </h:form>
+        <h:form>
+            <p:dialog header="Kein Erfolg" id="notAllowed" widgetVar="changesUnsuccessful" modal="false"
+                      showEffect="fade" hideEffect="fade" resizable="false">
+                <h:outputText
+                        value="Bitte beachten Sie, dass manche Daten nur von der Personalabteilung geändert werden können."/>
+                <p:ajax event="close" update="form"/>
+            </p:dialog>
+        </h:form>
+        <h:form>
+            <p:dialog widgetVar="user-pic-dlg" modal="false" showEffect="fade" hideEffect="fade" resizable="false">
+                <p:graphicImage id="user-pic-dlg" value="/images/User.png"/>
+            </p:dialog>
+        </h:form>
+    </ui:define>
+</ui:composition>

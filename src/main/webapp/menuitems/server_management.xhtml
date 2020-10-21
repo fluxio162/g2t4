@@ -1,0 +1,169 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name="content">
+        <h:outputStylesheet name="serverManagement.css" library="css"/>
+        <div class="outer">
+            <div class="inner">
+                <h:outputText id="heading" value="Geben Sie eine ID ein, um den Server bearbeiten zu können:"/>
+
+                <h:form id="serverForm">
+                    <p:dataTable id="serverTable" var="server" value="#{miniserverListController.miniserverRoomMap}"
+                                 widgetVar="serverTable"
+                                 emptyMessage="Kein Server gefunden."
+                                 filteredValue="#{miniserverListController.filteredMiniservers}"
+                                 rows="10"
+                                 paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                                 rowsPerPageTemplate="5,10,15"
+                                 paginatorPosition="bottom">
+                        <f:facet name="header">
+                            <p:outputPanel>
+                                <p:inputText class="filter-field" id="globalFilter" onkeyup="PF('serverTable').filter()"
+                                             placeholder="Suchbegriff..."/>
+                            </p:outputPanel>
+                        </f:facet>
+
+                        <p:column class="management-column" headerText="Server-ID" filterBy="#{server.key.id}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{server.key.id}"/>
+                        </p:column>
+                        <p:column class="management-column" headerText="IP-Adresse" filterBy="#{server.key.IPAddress}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{server.key.IPAddress}"/>
+                        </p:column>
+                        <p:column class="management-column" headerText="Erstellungsdatum" filterBy="#{server.key.createDate}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{server.key.createDate}">
+                                <f:convertDateTime pattern="dd.MM.yyyy 'um' HH:mm" timeZone="GMT+2"/>
+                            </h:outputText>
+                        </p:column>
+                        <p:column class="management-column" headerText="Hinzugefügt von" filterBy="##{server.key.createUser.firstName} #{server.key.createUser.lastName}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{server.key.createUser.lastName}, #{server.key.createUser.firstName} "/>
+                        </p:column>
+                        <p:column class="management-column" headerText="Raum" filterBy="#{server.value.roomId}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{server.value.roomId}"/>
+                        </p:column>
+                        <p:column class="management-column" headerText="Würfel" filterBy="#{server.key.timeFlip}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{server.key.timeFlip}"/>
+                        </p:column>
+                        <p:column style="width:100px;text-align: center">
+                            <p:commandButton update=":serverForm:serverEditDialog" icon="pi pi-pencil"
+                                             oncomplete="PF('serverEditDialog').show()" title="Bearbeiten">
+                                <f:setPropertyActionListener value="#{server.key}"
+                                                             target="#{miniserverDetailController.miniserver}"/>
+                            </p:commandButton>
+                            <p:commandButton action="#{miniserverDetailController.doDeleteMiniserver}"
+                                             icon="pi pi-trash"
+                                             title="Löschen" update=":serverForm:serverTable">
+                                <f:setPropertyActionListener value="#{server.key}"
+                                                             target="#{miniserverDetailController.miniserver}"/>
+                                <p:confirm header="Bestätigung"
+                                           message="Sind Sie sicher, dass Sie diesen Mini-Server löschen wollen? Die Aktion kann nicht rückgängig gemacht werden"
+                                           icon="pi pi-info-circle"/>
+                            </p:commandButton>
+                        </p:column>
+
+                    </p:dataTable>
+
+                <div class="newServer">
+                    <p:commandButton class="newServer-button" oncomplete="PF('newServerDialog').show()"
+                                     value="Server hinzufügen" icon="pi pi-plus"/>
+                </div>
+
+                    <p:dialog header="Bearbeiten" id="serverEditDialog" widgetVar="serverEditDialog" modal="false"
+                              showEffect="fade" hideEffect="fade" resizable="false">
+                        <p:outputPanel class="form" id="serverData"
+                                       rendered="#{not empty miniserverDetailController.miniserver}">
+
+                            <p:outputLabel class="text" value="Raum" for="room"/>
+                            <div class="ui-inputgroup">
+                                <p:selectOneMenu id="room" value="#{miniserverDetailController.selectedRoom}" label="Raum" >
+                                    <f:selectItem itemLabel="#{miniserverDetailController.currentRoom}" itemDisabled="true" />
+                                    <f:selectItems value="#{miniserverDetailController.availableRooms}"/>
+                                </p:selectOneMenu>
+                            </div>
+
+                        </p:outputPanel>
+                        <div class="dialog-buttons">
+                            <h:panelGrid columns="3">
+                                <p:commandButton value="Speichern"
+                                                 action="#{miniserverDetailController.doSaveMiniserver}"
+                                                 oncomplete="PF('serverEditDialog').hide(), location.reload()"
+                                                 update=":serverForm:serverTable"/>
+                                <p:commandButton value="Neu laden"
+                                                 action="#{miniserverDetailController.doReloadMiniserver}"
+                                                 update=":serverForm:serverTable"/>
+                                <p:commandButton value="Abbrechen" onclick="PF('serverEditDialog').hide()"/>
+                            </h:panelGrid>
+                        </div>
+                    </p:dialog>
+
+                    <p:dialog header="Neuen Server erstellen" id="newServerDialog" widgetVar="newServerDialog"
+                              modal="false"
+                              showEffect="fade" hideEffect="fade" resizable="false">
+                        <p:outputPanel class="form" id="newServerData">
+                            <p:outputLabel class="text" value="ID" for="ID"/>
+                            <div class="ui-inputgroup">
+                                <p:inputText id="ID" value="#{miniserverCreationController.miniserverId}" readonly="true"/>
+                            </div>
+                            <p:outputLabel class="text" value="IP-Adresse" for="ipadr"/>
+                            <div class="ui-inputgroup">
+                                <p:inputText id="ipadr" value="#{miniserverCreationController.miniserver.IPAddress}"/>
+                            </div>
+                            <p:outputLabel class="text" value="Hinzugefügt von" for="createuser"/>
+                            <div class="ui-inputgroup">
+                                <p:inputText id="createuser" value="#{sessionInfoBean.currentUser}"
+                                             readonly="true"/>
+                            </div>
+
+                            <p:outputLabel class="text" value="Hinzugefügt am" for="date"/>
+                            <div class="ui-inputgroup">
+                                <p:inputText id="date" value="#{sessionInfoBean.currentDate}"
+                                             readonly="true">
+                                    <f:convertDateTime pattern="dd.MM.yyyy 'um' HH:mm" timeZone="GMT+2"/>
+                                </p:inputText>
+                            </div>
+
+                            <p:commandButton value="Erstellen" id="saveButton"
+                                             action="#{miniserverCreationController.doSaveMiniserver}"
+                                             oncomplete="PF('creatingSuccessful').show(), PF('newServerDialog').hide()"
+                                             update=":serverForm:serverTable"/>
+                        </p:outputPanel>
+                    </p:dialog>
+
+                    <h:form>
+                        <p:confirmDialog global="true" modal="false" showEffect="fade" hideEffect="fade"
+                                         resizable="false">
+                            <p:commandButton value="Ja" type="button" styleClass="ui-confirmdialog-yes"
+                                             icon="pi pi-check"/>
+                            <p:commandButton value="Nein" type="button" styleClass="ui-confirmdialog-no"
+                                             icon="pi pi-times"/>
+                        </p:confirmDialog>
+                    </h:form>
+
+                    <p:dialog header="Erfolg" id="creatingSuccessful" widgetVar="creatingSuccessful" modal="false"
+                              showEffect="fade"
+                              hideEffect="fade" resizable="false" onHide="location.reload()">
+                        <h:panelGrid columns="1" style="text-align: center">
+                            <h:outputText value="Miniserver erfolgreich erstellt."/>
+                            <p:commandButton value="Ok" id="comfirmButton"
+                                             oncomplete="location.reload()"/>
+                        </h:panelGrid>
+                    </p:dialog>
+                </h:form>
+
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

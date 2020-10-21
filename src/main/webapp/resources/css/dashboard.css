@@ -1,0 +1,115 @@
+.outer {
+    display: grid;
+    height: max-content;
+    place-items: center;
+    margin: 5%;
+    margin-top: 3%;
+    border-radius: 20px;
+    background-color: white;
+    opacity: 0.8;
+}
+
+.inner {
+    display: grid;
+    height: max-content;
+    width: 90%;
+    margin-top: 3%;
+    margin-bottom: 3%;
+
+}
+
+.ui-panel-titlebar{
+    background-color: #00d7ff !important;
+    border-color: #00d7ff !important;
+}
+.ui-button {
+    background-color: lightslategrey !important;
+    border-color: lightslategrey !important;
+}
+.ui-icon{
+    color: lightslategrey;
+}
+
+.ui-column-title{
+    font-weight: bold !important;
+}
+
+.badge-column {
+    width: 25%;
+    padding: 2% !important;
+}
+
+.badge{
+    width: 100%;
+}
+
+.data{
+    font-weight: bold;
+    margin-left: 5% !important;
+}
+
+.ui-inputfield{
+    width: 30vh;
+    height: 5vh;
+    background-color: whitesmoke;
+    box-shadow: 2px 2px lightslategrey;
+    border-color: lightslategrey;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+.form {
+    content: "";
+    display: table;
+    clear: both;
+    width: 100% !important;
+    margin-top: 2%;
+}
+
+.form-column {
+    float: left;
+    width: 48%;
+    margin: 1%;
+    height: 100%
+}
+
+.ui-inputfield{
+    width: 30vh;
+    height: 5vh;
+    background-color: whitesmoke;
+    box-shadow: 2px 2px lightslategrey;
+    border-color: lightslategrey;
+    margin-top: 5%;
+    margin-bottom: 5%;
+}
+
+
+.filter-field{
+    margin: 1% !important;
+    width: 60vh;
+    text-align: center;
+}
+
+
+.ui-state-active {
+    background-color: #00d7ff !important;
+}
+
+.ui-state-focus {
+    border-color: #00d7ff !important;
+}
+
+.ui-datagrid-header {
+    background-color: lightslategrey !important;
+    border-color: lightslategrey !important;
+}
+
+.heading {
+    font-size: 4vh !important;
+    text-align: center !important;
+    margin-bottom: 2%;
+}
+
+#activityTable {
+    margin-top: 2% !important;
+}

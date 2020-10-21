@@ -1,0 +1,80 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <f:metadata>
+        <f:event type="preRenderView" listener="#{badgeService.onload}"/>
+    </f:metadata>
+
+    <ui:define name="content">
+        <h:outputStylesheet name="dashboard.css" library="css"/>
+        <div class="outer">
+            <div class="inner">
+                <div class="heading">
+                    <h:outputText value="Aktuelle Produktivitätsübersicht der Firma"/>
+                </div>
+                <div id="form">
+                    <div class="form-column">
+                        <p:dataTable id="activityTable" var="activity"
+                                     value="#{allActivitiesController.currentActivitiesPercentage}"
+                                     widgetVar="activityTable"
+                                     emptyMessage="Keine Aktivitäten für diese Woche.">
+
+
+                            <p:column headerText="Aktivität">
+                                <h:outputText value="#{activity.key}"/>
+                            </p:column>
+
+                            <p:column headerText="Anteil">
+
+                             <h:outputText value="#{activity.value} %"/>
+
+                            </p:column>
+
+                        </p:dataTable>
+                    </div>
+                    <div class="form-column">
+                        <p:chart type="pie" id="pieChartOfAcvtivities" responsive="true"
+                                 model="#{allActivitiesController.model}"
+                        />
+                    </div>
+                </div>
+
+                <h:form>
+                    <p:dataGrid var="badge" value="#{badgeListController.latestBadges}"
+                                columns="4" layout="grid"
+                                rows="4"
+                                paginator="true"
+                                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                                rowsPerPageTemplate="4,8,12"
+                                paginatorPosition="bottom"
+                    >
+                        <f:facet name="header">
+                            Preisträger der letzten Woche
+                        </f:facet>
+
+                        <p:dataViewGridItem>
+                            <p:panel header="#{badge.badgeTitle}" style="text-align:center; font-style: italic">
+                                <h:panelGrid columns="1" style="width:100%">
+                                    <p:graphicImage class="badge" value="#{badge.img.toString()}"/>
+
+                                    <h:outputText style="font-weight: bold"
+                                                  value="#{badge.user.firstName} #{badge.user.lastName}"/>
+
+                                </h:panelGrid>
+                            </p:panel>
+                        </p:dataViewGridItem>
+
+                    </p:dataGrid>
+
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

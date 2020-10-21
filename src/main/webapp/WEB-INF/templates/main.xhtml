@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <title>TimeManager</title>
+        <h:outputStylesheet name="style.css" library="css"/>
+        <link href='http://fonts.googleapis.com/css?family=Oswald' rel='stylesheet' type='text/css'/>
+    </h:head>
+
+    <h:body>
+        <div id="page">
+
+            <div id="header" class="header">
+                <ui:include src="/WEB-INF/includes/header.xhtml" />
+            </div>
+            <h:form rendered="#{sessionInfoBean.loggedIn}">
+            <div id="mySidenav" class="sidenav">
+                <h:form>
+                    <p:menu style="width: 100%">
+                        <p:submenu label="Dashboard" rendered="#{sessionInfoBean.loggedIn}">
+                            <p:menuitem value="Produktivitätsanalyse" url="/menuitems/dashboard.xhtml" rendered="#{sessionInfoBean.loggedIn}"/>
+                            <p:menuitem value="Badges" url="/menuitems/all_badges.xhtml" rendered="#{sessionInfoBean.hasRole('ADMIN')}"/>
+                        </p:submenu>
+                        <p:submenu label="Aktivitätsdaten" rendered="#{sessionInfoBean.hasRole('EMPLOYEE') or sessionInfoBean.hasRole('TEAM_LEADER') or sessionInfoBean.hasRole('DEPARTMENT_MANAGER')}">
+                            <p:menuitem value="Eigene Aktivitäten" url="/menuitems/own_activity_data.xhtml" rendered="#{sessionInfoBean.hasRole('EMPLOYEE')}"/>
+                            <p:menuitem value="Aktivitätskorrektur" url="/menuitems/own_activity_correction.xhtml" rendered="#{sessionInfoBean.hasRole('EMPLOYEE')}"/>
+                            <p:menuitem value="Aktivitäten des Teams" url="/menuitems/team_activity_data.xhtml" rendered="#{sessionInfoBean.hasRole('TEAM_LEADER')}"/>
+                            <p:menuitem value="Aktivitäten der Mitarbeiter" url="/menuitems/employee_activity.xhtml" rendered="#{sessionInfoBean.hasRole('DEPARTMENT_MANAGER')}"/>
+                            <p:menuitem value="Änderungsanfragen" url="/menuitems/activity_correction.xhtml" rendered="#{sessionInfoBean.hasRole('DEPARTMENT_MANAGER') or sessionInfoBean.hasRole('TEAM_LEADER')}"/>
+                        </p:submenu>
+
+                        <p:submenu label="Badges" rendered="#{sessionInfoBean.hasRole('EMPLOYEE') or sessionInfoBean.hasRole('DEPARTMENT_MANAGER')}">
+                            <p:menuitem value="Eigene Badges" url="/menuitems/own_badges.xhtml" rendered="#{sessionInfoBean.hasRole('EMPLOYEE')}"/>
+                            <p:menuitem value="Badges der Mitarbeiter" url="/menuitems/employee_badges.xhtml" rendered="#{sessionInfoBean.hasRole('DEPARTMENT_MANAGER')}"/>
+                        </p:submenu>
+                        <p:submenu label="Urlaub" rendered="#{sessionInfoBean.hasRole('EMPLOYEE') or sessionInfoBean.hasRole('TEAM_LEADER') or sessionInfoBean.hasRole('DEPARTMENT_MANAGER')}">
+                            <p:menuitem value="Urlaub beantragen" url="/menuitems/vacation_creation.xhtml" rendered="#{sessionInfoBean.hasRole('EMPLOYEE')}"/>
+                            <p:menuitem value="Urlaubsanfragen" url="/menuitems/vacation_confirmation.xhtml" rendered="#{sessionInfoBean.hasRole('TEAM_LEADER') or sessionInfoBean.hasRole('DEPARTMENT_MANAGER')}"/>
+                        </p:submenu>
+                        <p:submenu label="Verwaltung" rendered="#{sessionInfoBean.hasRole('ADMIN')}">
+                            <p:menuitem value="Benutzer" url="/menuitems/user_management.xhtml"/>
+                            <p:menuitem value="Team" url="/menuitems/team_management.xhtml"/>
+                            <p:menuitem value="Abteilung" url="/menuitems/department_management.xhtml"/>
+                            <p:menuitem value="TimeFlip Würfel" url="/menuitems/cube_management.xhtml"/>
+                            <p:menuitem value="Miniserver" url="/menuitems/server_management.xhtml"/>
+                            <p:menuitem value="Raum" url="/menuitems/room_management.xhtml"/>
+                            <p:menuitem value="Audit Log" url="/menuitems/audit_log.xhtml"/>
+                        </p:submenu>
+                        <p:submenu label="Verwaltung" rendered="#{sessionInfoBean.hasRole('DEPARTMENT_MANAGER')}">
+                            <p:menuitem value="Audit Log" url="/menuitems/audit_log.xhtml"/>
+                    </p:submenu>
+                        <p:submenu label="Account" rendered="#{sessionInfoBean.loggedIn}">
+                            <p:menuitem value="Einstellungen" url="/menuitems/settings.xhtml" rendered="#{sessionInfoBean.hasRole('EMPLOYEE') or sessionInfoBean.hasRole('TEAM_LEADER') or sessionInfoBean.hasRole('DEPARTMENT_MANAGER')}"/>
+                            <p:menuitem value="Logout" url="/logout"/>
+                        </p:submenu>
+                    </p:menu>
+                    </h:form>
+                    </div>
+                    </h:form>
+
+                    <div id="content" class="content">
+                        <ui:insert name="content">Content</ui:insert>
+                    </div>
+
+                    <div id="footer" style="margin-top: 10px;" class="footer">
+                        <ui:include src="/WEB-INF/includes/footer.xhtml" />
+                    </div>
+                </div>
+
+            </h:body>
+        </html>

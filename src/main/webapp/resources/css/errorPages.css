@@ -1,0 +1,43 @@
+.outer {
+    display: grid;
+    height: max-content;
+    place-items: center;
+    margin: 5%;
+    margin-top: 3%;
+    border-radius: 20px;
+    background-color: white;
+    opacity: 0.8;
+}
+
+.inner {
+    display: grid;
+    place-items: center;
+    height: max-content;
+    width: 90%;
+    margin-top: 3%;
+    margin-bottom: 3%;
+    font-size: 3vh;
+}
+#logo {
+    width:40vh;
+}
+
+#first-info {
+    margin-top: 2%;
+    margin-bottom: 1%;
+}
+
+#second-info {
+    margin-top: 0%;
+    margin-bottom: 5%;
+}
+
+
+.ui-link{
+    color: lightslategrey;
+    font-size: 2.5vh !important;
+}
+
+.ui-link:hover {
+    color: #00d7ff;;
+}

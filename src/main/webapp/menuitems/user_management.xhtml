@@ -1,0 +1,311 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name="content">
+        <script type="text/javascript">
+            PrimeFaces.locales ['de'] = {
+                closeText: 'Schließen',
+                prevText: 'Zurück',
+                nextText: 'Weiter',
+                monthNames: ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember' ],
+                monthNamesShort: ['Jan', 'Feb', 'Mär', 'Apr', 'Mai', 'Jun', 'Jul', 'Aug', 'Sep', 'Okt', 'Nov', 'Dez' ],
+                dayNames: ['Sonntag', 'Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag'],
+                dayNamesShort: ['Son', 'Mon', 'Die', 'Mit', 'Don', 'Fre', 'Sam'],
+                dayNamesMin: ['S', 'M', 'D', 'M ', 'D', 'F ', 'S'],
+                weekHeader: 'Woche',
+                firstDay: 1,
+                isRTL: false,
+                showMonthAfterYear: false,
+                yearSuffix:'',
+                timeOnlyTitle: 'Nur Zeit',
+                timeText: 'Zeit',
+                hourText: 'Stunde',
+                minuteText: 'Minute',
+                secondText: 'Sekunde',
+                currentText: 'Aktuelles Datum',
+                ampm: false,
+                month: 'Monat',
+                week: 'Woche',
+                day: 'Tag',
+                allDayText: 'Ganzer Tag'
+            };
+        </script>
+        <h:outputStylesheet name="management.css" library="css"/>
+        <div class="outer">
+            <div class="inner">
+                <h:outputText id="heading" value="Geben Sie einen Namen ein, um den Nutzer bearbeiten zu können:"/>
+
+                <h:form id="userForm">
+                    <p:dataTable id="usersTable" var="user" value="#{userListController.users}" widgetVar="userTable"
+                                 emptyMessage="Kein Benutzer gefunden."
+                                 filteredValue="#{userListController.filteredUsers}"
+                                 rows="10"
+                                 paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                                 rowsPerPageTemplate="5,10,15"
+                                 paginatorPosition="bottom">
+                        <f:facet name="header">
+                            <p:outputPanel>
+                                <p:inputText class="filter-field" id="globalFilter" onkeyup="PF('userTable').filter()"
+                                             placeholder="Suchbegriff..."/>
+                            </p:outputPanel>
+                        </f:facet>
+
+
+                        <p:column class="management-column" headerText="Benutzername" filterBy="#{user.username}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{user.username}"/>
+                        </p:column>
+                        <p:column headerText="Vorname" filterBy="#{user.firstName}" filterStyle="display:none" filterMatchMode="contains">
+                            <h:outputText value="#{user.firstName}"/>
+                        </p:column>
+                        <p:column headerText="Nachname" filterBy="#{user.lastName}" filterStyle="display:none" filterMatchMode="contains">
+                            <h:outputText value="#{user.lastName}"/>
+                        </p:column>
+
+                        <p:column style="width:100px;text-align: center">
+                            <p:commandButton update=":userForm:userEditDialog" icon="pi pi-pencil"
+                                             oncomplete="PF('userEditDialog').show()" title="Bearbeiten">
+                                <f:setPropertyActionListener value="#{user}" target="#{userDetailController.user}"/>
+                            </p:commandButton>
+                            <p:commandButton action="#{userDetailController.doDeleteUser}" icon="pi pi-user-minus"
+                                             title="Löschen" update=":userForm:usersTable">
+                                <f:setPropertyActionListener value="#{user}" target="#{userDetailController.user}"/>
+                                <p:confirm header="Bestätigung"
+                                           message="Sind Sie sicher, dass sie diesen Benutzer löschen wollen? Die Aktion kann nicht rückgängig gemacht werden"
+                                           icon="pi pi-info-circle"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                    <div class="newuser">
+                        <p:commandButton class="newuser-button" oncomplete="PF('newUserDialog').show()"
+                                         value="Benutzer hinzufügen" icon="pi pi-user-plus">
+
+                        </p:commandButton>
+                    </div>
+
+                    <p:dialog header="Bearbeiten" id="userEditDialog" class="dlg" widgetVar="userEditDialog" modal="false"
+                              showEffect="fade" hideEffect="fade" resizable="false">
+                        <p:outputPanel class="form" id="userData" rendered="#{not empty userDetailController.user}">
+                            <div class="form-column">
+                                <p:outputLabel class="text" value="Benutzername" for="username"/>
+                                <div class="ui-inputgroup">
+                                    <p:inputText id="username" value="#{userDetailController.user.username}"/>
+                                </div>
+
+                                <p:outputLabel class="text" value="Vorname" for="firstname"/>
+                                <div class="ui-inputgroup">
+                                    <p:inputText id="firstname" value="#{userDetailController.user.firstName}"/>
+                                </div>
+
+                                <p:outputLabel class="text" value="Nachname" for="lastname"/>
+                                <div class="ui-inputgroup">
+                                    <p:inputText id="lastname" value="#{userDetailController.user.lastName}"/>
+                                </div>
+
+                                <p:outputLabel class="text" value="Geburtsdatum" for="birthday"/>
+                                <div class="ui-inputgroup">
+                                    <p:calendar id="birthday" value="#{userDetailController.user.birthDay}" locale="de" navigator="true"  pattern="dd.MM.yyyy" />
+                                </div>
+
+                            </div>
+
+                            <div class="form-column">
+                                <p:outputLabel class="text" value="E-Mail-Adresse" for="email"/>
+                                <div class="ui-inputgroup">
+                                    <p:inputText id="email" value="#{userDetailController.user.email}"/>
+                                </div>
+
+                                <p:outputLabel class="text" value="Telefonnummer" for="phone"/>
+                                <div class="ui-inputgroup">
+                                    <p:inputText id="phone" value="#{userDetailController.user.phone}"/>
+                                </div>
+                                <p:outputLabel class="text" value="Rolle" for="roles"/>
+                                <div class="ui-inputgroup">
+                                    <p:selectCheckboxMenu id="roles" value="#{userDetailController.userRolesString}" label="Rollen" >
+                                        <f:selectItems value="#{userDetailController.availableRolesString}"/>
+                                    </p:selectCheckboxMenu>
+                                </div>
+
+                                <p:outputLabel class="text" value="Würfel" for="cube"/>
+                                <div class="ui-inputgroup">
+                                    <p:selectOneMenu id="cube" value="#{userDetailController.selectedTimeFlip}" label="Würfel" >
+                                        <f:selectItem itemLabel="#{userDetailController.currentTimeFlip}" itemDisabled="true" />
+                                        <f:selectItems value="#{userDetailController.availableTimeFlips}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+
+                            <div class="form-column">
+                                <p:outputLabel class="text" value="Team" for="Team"/>
+                                <div class="ui-inputgroup">
+                                    <p:selectOneMenu id="Team" value="#{userDetailController.selectedTeam}" label="Team" >
+                                        <f:selectItem itemLabel="#{userDetailController.currentTeam}" itemDisabled="true" />
+                                        <f:selectItems value="#{userDetailController.availableTeams}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                                
+                                <p:outputLabel class="text" value="Abteilung" for="department"/>
+                                <div class="ui-inputgroup">
+                                    <p:selectOneMenu id="department" value="#{userDetailController.selectedDepartment}" label="Abteilung" >
+                                        <f:selectItem itemLabel="#{userDetailController.currentDepartment}" itemDisabled="true" />
+                                        <f:selectItems value="#{userDetailController.availableDepartments}"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <p:outputLabel class="text" value="Raum" for="room"/>
+                                <div class="ui-inputgroup">
+                                    <p:selectOneMenu id="room" value="#{userDetailController.selectedRoom}" label="Abteilung" >
+                                        <f:selectItem itemLabel="#{userDetailController.currentRoom}" itemDisabled="true" />
+                                        <f:selectItems value="#{userDetailController.availableRooms}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+                        </p:outputPanel>
+                        <div class="dialog-buttons">
+                            <h:panelGrid columns="3">
+                                <p:commandButton value="Speichern" action="#{userDetailController.doSaveUser()}"
+                                                 oncomplete="PF('userEditDialog').hide()"
+                                                 update=":userForm:usersTable"/>
+                                <p:commandButton value="Neu laden" action="#{userDetailController.doReloadUser()}"
+                                                 update=":userForm:userData"/>
+                                <p:commandButton value="Abbrechen" onclick="PF('userEditDialog').hide()"/>
+                            </h:panelGrid>
+                        </div>
+                    </p:dialog>
+
+                    <p:dialog header="Neuen Benutzer erstellen" id="newUserDialog" class="dlg" widgetVar="newUserDialog"
+                              modal="false"
+                              showEffect="fade" hideEffect="fade" resizable="false">
+                        <p:outputPanel class="form" id="newUserData">
+                            <div class="form-column">
+                                <p:outputLabel class="text" value="Benutzername" for="uname"/>
+                                <div class="ui-inputgroup">
+                                    <p:inputText id="uname" value="#{userCreationController.user.username}">
+                                        <p:ajax event="blur" listener="#{userCreationController.validateUsername}"
+                                                update="saveButton growl"/>
+                                    </p:inputText>
+                                </div>
+
+                                <p:outputLabel class="text" value="Passwort" for="pwd"/>
+                                <div class="ui-inputgroup">
+                                    <p:password id="pwd" value="#{userCreationController.user.password}">
+                                        <p:ajax event="blur" listener="#{userCreationController.validatePassword}"
+                                                update="saveButton growl"/>
+                                    </p:password>
+                                </div>
+
+                                <p:outputLabel class="text" value="Vorname" for="fname"/>
+                                <div class="ui-inputgroup">
+                                    <p:inputText id="fname" value="#{userCreationController.user.firstName}"/>
+                                </div>
+
+                                <p:outputLabel class="text" value="Nachname" for="lname"/>
+                                <div class="ui-inputgroup">
+                                    <p:inputText id="lname" value="#{userCreationController.user.lastName}"/>
+                                </div>
+
+                            </div>
+                            <div class="form-column">
+                                <p:outputLabel class="text" value="Geburtsdatum" for="bday"/>
+                                <div class="ui-inputgroup">
+                                    <p:calendar id="bday" value="#{userCreationController.user.birthDay}" locale="de" navigator="true"  pattern="dd.MM.yyyy" />
+                                </div>
+
+                                <p:outputLabel class="text" value="E-Mail-Adresse" for="mail"/>
+                                <div class="ui-inputgroup">
+                                    <p:inputText id="mail" value="#{userCreationController.user.email}"/>
+                                </div>
+
+                                <p:outputLabel class="text" value="Telefonnummer" for="telephone"/>
+                                <div class="ui-inputgroup">
+                                    <p:inputText id="telephone" value="#{userCreationController.user.phone}"/>
+                                </div>
+
+                                <p:outputLabel class="text" value="Rolle" for="role"/>
+                                <div class="ui-inputgroup">
+                                    <p:selectCheckboxMenu id="role" value="#{userCreationController.userRolesString}" label="Rollen" >
+                                        <f:selectItems value="#{userCreationController.availableRolesString}"/>
+                                    </p:selectCheckboxMenu>
+                                </div>
+                            </div>
+
+                            <div class="form-column">
+                                <p:outputLabel class="text" value="Team" for="tm"/>
+                                <div class="ui-inputgroup">
+                                    <p:selectOneMenu id="tm" value="#{userCreationController.selectedTeam}" label="Team" >
+                                        <f:selectItem itemLabel="#{userCreationController.currentTeam}" itemDisabled="true" />
+                                        <f:selectItems value="#{userCreationController.availableTeams}"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <p:outputLabel class="text" value="Abteilung" for="dep"/>
+                                <div class="ui-inputgroup">
+                                    <p:selectOneMenu id="dep" value="#{userCreationController.selectedDepartment}" label="Abteilung" >
+                                        <f:selectItem itemLabel="#{userCreationController.currentDepartment}" itemDisabled="true" />
+                                        <f:selectItems value="#{userCreationController.availableDepartments}"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <p:outputLabel class="text" value="Würfel" for="timeFlip"/>
+                                <div class="ui-inputgroup">
+                                    <p:selectOneMenu id="timeFlip" value="#{userCreationController.selectedTimeFlip}" label="Würfel" >
+                                        <f:selectItem itemLabel="Kein Würfel" itemDisabled="true" />
+                                        <f:selectItems value="#{userCreationController.availableTimeFlips}"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <p:outputLabel class="text" value="Raum" for="rm"/>
+                                <div class="ui-inputgroup">
+                                    <p:selectOneMenu id="rm" value="#{userCreationController.selectedRoom}" label="Raum" >
+                                        <f:selectItem itemLabel="#{userCreationController.currentRoom}" itemDisabled="true" />
+                                        <f:selectItems value="#{userCreationController.availableRooms}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            </div>
+
+
+                            <p:growl id="growl" sticky="true" showDetail="true"/>
+                        </p:outputPanel>
+                        <div class="dialog-buttons">
+                        <p:commandButton value="Erstellen" id="saveButton"
+                                         action="#{userCreationController.doSaveUser()}"
+                                         oncomplete="PF('creatingSuccessful').show(), PF('newUserDialog').hide()"
+                                         disabled="#{userCreationController.disableSaveButton}"/>
+                        </div>
+                    </p:dialog>
+
+
+                    <h:form>
+                        <p:confirmDialog global="true" modal="false" showEffect="fade" hideEffect="fade"
+                                         resizable="false">
+                            <p:commandButton value="Ja" type="button" styleClass="ui-confirmdialog-yes"
+                                             icon="pi pi-check"/>
+                            <p:commandButton value="Nein" type="button" styleClass="ui-confirmdialog-no"
+                                             icon="pi pi-times"/>
+                        </p:confirmDialog>
+                    </h:form>
+
+                    <h:form>
+                        <p:dialog header="Erfolg" id="creatingSuccessful" widgetVar="creatingSuccessful" modal="false"
+                                  showEffect="fade"
+                                  hideEffect="fade" resizable="false" onHide="location.reload()">
+                            <h:panelGrid columns="1" style="text-align: center">
+                                <h:outputText value="Benutzer erfolgreich erstellt."/>
+                                <p:commandButton value="Ok" id="comfirmButton"
+                                                 oncomplete="location.reload()"/>
+                            </h:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,101 @@
+.outer {
+    display: grid;
+    height: max-content;
+    place-items: center;
+    margin: 5%;
+    margin-top: 3%;
+    border-radius: 20px;
+    background-color: white;
+    opacity: 0.8;
+}
+
+.inner {
+    display: grid;
+    height: max-content;
+    width: 90%;
+    margin-top: 3%;
+    margin-bottom: 3%;
+    font-size: 5vh;
+}
+
+#form {
+    content: "";
+    display: table;
+    clear: both;
+    width: 100%;
+    margin-top: 5%;
+    margin-bottom: 10%;
+}
+
+
+#save-button {
+    width: 100% !important;
+}
+
+.ui-button {
+    width: 30% !important;
+}
+
+.ui-dialog-titlebar {
+    border-color: #00d7ff !important;
+    background-color: #00d7ff !important;
+}
+
+#activityListForm {
+    width: 50%;
+}
+
+#input-fields {
+    width: 30% !important;
+    margin-left: 5% !important;
+}
+
+.ui-inputfield {
+    width: 30vh;
+    height: 5vh;
+    background-color: whitesmoke;
+    box-shadow: 2px 2px lightslategrey;
+    border-color: lightslategrey;
+}
+
+.ui-datepicker {
+    background-color: whitesmoke;
+    box-shadow: 2px 2px lightslategrey;
+    border-color: lightslategrey;
+}
+
+.ui-state-highlight {
+    border-color: lightslategrey !important;
+    background-color: lightslategrey!important;
+    color: white !important;
+}
+
+.ui-state-active{
+    border-color: #00d7ff !important;
+    background-color: #00d7ff !important;
+}
+
+.ui-datatable {
+    text-align: center;
+}
+
+.ui-datatable-header {
+    background-color: #00d7ff !important;
+    border-color: #00d7ff !important;
+}
+
+.ui-column-title{
+    font-weight: bold !important;
+}
+
+.heading {
+    font-size: 4vh !important;
+    text-align: center !important;
+}
+
+.small-heading {
+    margin-top: 3%;
+    margin-bottom: 2%;
+    font-size: 2vh !important;
+    text-align: center !important;
+}

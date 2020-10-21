@@ -1,0 +1,87 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name="content">
+        <h:outputStylesheet name="vacationConfirmation.css" library="css"/>
+        <div class="outer">
+            <div class="inner">
+                <h:outputText id="heading" value="Hier finden Sie alle offenen Urlaubsanfragen:"/>
+
+                <h:form id="form">
+                <p:dataTable id="vacationTable" var="vacation" value="#{vacationListController.employeeVacation}" widgetVar="vacationTable"
+                             emptyMessage="Keine Daten gefunden."
+                             filteredValue="#{vacationListController.filteredVacations}"
+                             rows="10"
+                             paginator="true"
+                             paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                             currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                             rowsPerPageTemplate="5,10,15"
+                             paginatorPosition="bottom">
+                    <f:facet name="header">
+                        <p:outputPanel>
+                            <p:inputText class="filter-field" id="globalFilter" onkeyup="PF('vacationTable').filter()"
+                                         placeholder="Suchbegriff..."/>
+                        </p:outputPanel>
+                    </f:facet>
+
+
+                    <p:column class="table-column" headerText="ID" filterBy="#{vacation.id}" filterStyle="display:none"
+                              filterMatchMode="contains">
+                        <h:outputText value="#{vacation.id}"/>
+                    </p:column>
+                    <p:column headerText="Angestellter" filterBy="#{vacation.createUser.firstName} #{vacation.createUser.lastName}" filterStyle="display:none" filterMatchMode="contains">
+                        <h:outputText value="#{vacation.createUser.firstName} #{vacation.createUser.lastName}"/>
+                    </p:column>
+                    <p:column headerText="Von" filterBy="#{vacation.vacationStart}" filterStyle="display:none" filterMatchMode="contains">
+                        <h:outputText value="#{vacation.vacationStart}"><f:convertDateTime pattern="dd.MM.yyyy"/></h:outputText>
+                    </p:column>
+                    <p:column headerText="Bis" filterBy="#{vacation.vacationEnd}" filterStyle="display:none" filterMatchMode="contains">
+                        <h:outputText value="#{vacation.vacationEnd}"><f:convertDateTime pattern="dd.MM.yyyy"/></h:outputText>
+                    </p:column>
+                    <p:column headerText="Beantragt am" filterBy="#{vacation.createDate}" filterStyle="display:none" filterMatchMode="contains">
+                        <h:outputText value="#{vacation.createDate}"><f:convertDateTime pattern="dd.MM.yyyy"/></h:outputText>
+                    </p:column>
+
+                    <p:column style="width:100px;text-align: center">
+                        <p:commandButton icon="pi pi-check"
+                                         title="Bestätigung"
+                                         update=":form:vacationTable"
+                                         action="#{vacationDetailController.doSaveStatusAndVacation('Bestätigt')}">
+                            <f:setPropertyActionListener value="#{vacation}" target="#{vacationDetailController.vacation}"/>
+                            <p:confirm header="Bestätigung"
+                                       message="Sind Sie sicher, dass Sie die Anfrage bestätigen wollen? Die Aktion kann nicht rückgängig gemacht werden."
+                                       icon="pi pi-info-circle"/>
+                        </p:commandButton>
+                        <p:commandButton icon="pi pi-times"
+                                         title="Ablehnen"
+                                         update=":form:vacationTable"
+                                         action="#{vacationDetailController.doSaveStatusAndVacation('Abgelehnt')}">
+                            <f:setPropertyActionListener value="#{vacation}" target="#{vacationDetailController.vacation}"/>
+                            <p:confirm header="Bestätigung"
+                                       message="Sind Sie sicher, dass Sie die Anfrage ablehnen wollen? Die Aktion kann nicht rückgängig gemacht werden."
+                                       icon="pi pi-info-circle"/>
+                        </p:commandButton>
+                    </p:column>
+                </p:dataTable>
+
+                    <h:form>
+                        <p:confirmDialog global="true" modal="false" showEffect="fade" hideEffect="fade"
+                                         resizable="false">
+                            <p:commandButton value="Ja" type="button" styleClass="ui-confirmdialog-yes"
+                                             icon="pi pi-check"/>
+                            <p:commandButton value="Nein" type="button" styleClass="ui-confirmdialog-no"
+                                             icon="pi pi-times"/>
+                        </p:confirmDialog>
+                    </h:form>
+
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

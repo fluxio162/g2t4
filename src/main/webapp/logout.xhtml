@@ -1,0 +1,37 @@
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:ng="http://xmlns.jcp.org/jsf/passthrough"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <!-- TODO: Reset PW page -->
+    <ui:define name ="content">
+        <p:link href="login.xhtml">
+        <p:graphicImage id="login_logo" value = "images/Logo_TimeManager.png"/>
+        </p:link>
+        <h:outputStylesheet name="auth.css" library="css"/>
+<div id="login_outer_form">
+    <div id="login_inner_form">
+        <h:graphicImage id="login_logo_form" value = "images/Logo_TimeManager_Login_Form.png"/>
+        <form action="#{request.contextPath}/login" method="post">
+            <h:panelGrid style="margin-top: -10vh">
+                <p:outputLabel id="text_username" for="username" value="Benutzername:"/>
+                <p:inputText id="username" type="text" required="true"/>
+
+                <p:outputLabel id="text_pw" for="password" value="Passwort:"/>
+                <p:inputText id="password" type="password" required="true"/>
+
+                <button type="submit"  id="login_button" class="ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only">
+                    <span class="ui-button-text" id="text_button">Login</span>
+                </button>
+            </h:panelGrid>
+        </form>
+    </div>
+    <div id="messages" style="position: absolute; width: 60%; margin-top: 35%; opacity: 90%">
+        <p:messages id="messages" showDetail="true" closable="true" redisplay="false">
+            <f:event type="preRenderView" listener="#{messageBean.showLogout}" />
+        </p:messages></div>
+    </div>
+    </ui:define>
+</ui:composition>

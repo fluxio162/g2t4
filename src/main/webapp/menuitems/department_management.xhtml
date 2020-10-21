@@ -1,0 +1,162 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+    <ui:define name="content">
+        <h:outputStylesheet name="departmentManagement.css" library="css"/>
+        <div class="outer">
+            <div class="inner">
+                <h:outputText id="heading" value="Geben Sie einen Namen ein, um die Abteilung bearbeiten zu können:"/>
+
+                <h:form id="departmentForm">
+                    <p:dataTable id="departmentTable" var="department" value="#{departmentListController.departments}" widgetVar="departmentTable"
+                                 emptyMessage="Keine Abteilung gefunden."
+                                 filteredValue="#{departmentListController.filteredDepartments}"
+                                 rows="10"
+                                 paginator="true"
+                                 paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                 currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                                 rowsPerPageTemplate="5,10,15"
+                                 paginatorPosition="bottom">
+                        <f:facet name="header">
+                            <p:outputPanel>
+                                <p:inputText class="filter-field" id="globalFilter" onkeyup="PF('departmentTable').filter()"
+                                             placeholder="Suchbegriff..."/>
+                            </p:outputPanel>
+                        </f:facet>
+
+                        <p:column class="management-column" headerText="Abteilung" filterBy="#{department.departmentName}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{department.departmentName}"/>
+                        </p:column>
+
+                        <p:column class="management-column" headerText="AbteilungsleiterIn" filterBy="#{department.departmentManager}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{department.departmentManager}"/>
+                        </p:column>
+
+                        <p:column class="management-column" headerText="Teams" filterBy="#{department.team}" filterStyle="display:none"
+                                  filterMatchMode="contains">
+                            <h:outputText value="#{department.team}"/>
+                        </p:column>
+
+                        <p:column style="width:100px;text-align: center">
+                            <p:commandButton update=":departmentForm:departmentEditDialog" icon="pi pi-pencil"
+                                             oncomplete="PF('departmentEditDialog').show()" title="Bearbeiten">
+                                <f:setPropertyActionListener value="#{department}" target="#{departmentDetailController.department}"/>
+                            </p:commandButton>
+                            <p:commandButton action="#{departmentDetailController.doDeleteDepartment}" icon="pi pi-trash"
+                                             title="Löschen" update=":departmentForm:departmentTable">
+                                <f:setPropertyActionListener value="#{department}" target="#{departmentDetailController.department}"/>
+                                <p:confirm header="Bestätigung"
+                                           message="Sind Sie sicher, dass sie diese Abteilung löschen wollen? Die Aktion kann nicht rückgängig gemacht werden"
+                                           icon="pi pi-info-circle"/>
+                            </p:commandButton>
+                        </p:column>
+                    </p:dataTable>
+                    <div class="newDepartment">
+                        <p:commandButton class="newDepartment-button" oncomplete="PF('newDepartmentDialog').show()"
+                                         value="Abteilung hinzufügen" icon="pi pi-plus">
+
+                        </p:commandButton>
+                    </div>
+
+                    <p:dialog header="Bearbeiten" id="departmentEditDialog" class="dlg" widgetVar="departmentEditDialog" modal="false"
+                              showEffect="fade" hideEffect="fade" resizable="false">
+                        <p:outputPanel class="form" id="departmentData" rendered="#{not empty departmentDetailController.department}">
+                                <p:outputLabel class="text" value="AbteilungsleiterIn" for="departmentManager"/>
+                                <div class="ui-inputgroup">
+                                    <p:selectOneMenu id="departmentManager" value="#{departmentDetailController.selectedUser}" label="AbteilungsleiterIn" filter="true" filterMatchMode="contains">
+                                        <f:selectItem itemLabel="#{departmentDetailController.currentUser}" itemDisabled="true" />
+                                        <f:selectItems value="#{departmentDetailController.availableUser}"/>
+                                    </p:selectOneMenu>
+                                </div>
+                            <p:outputLabel class="text" value="Teams" for="teams"/>
+                            <div class="ui-inputgroup">
+                                <p:selectCheckboxMenu id="teams" value="#{departmentDetailController.departmentTeams}" label="Teams" >
+                                    <f:selectItems value="#{departmentDetailController.availableTeams}"/>
+                                </p:selectCheckboxMenu>
+                            </div>
+
+                        </p:outputPanel>
+                        <div class="dialog-buttons">
+                            <h:panelGrid columns="3">
+                                <p:commandButton value="Speichern" action="#{departmentDetailController.doSaveDepartment()}"
+                                                 oncomplete="PF('departmentEditDialog').hide(), location.reload()"
+                                                 update=":departmentForm:departmentTable"/>
+                                <p:commandButton value="Neu laden" action="#{departmentDetailController.doReloadDepartment()}"
+                                                 update=":departmentForm:departmentData"/>
+                                <p:commandButton value="Abbrechen" onclick="PF('departmentEditDialog').hide()"/>
+                            </h:panelGrid>
+                        </div>
+                    </p:dialog>
+
+                    <p:dialog header="Neue Abteilung erstellen" id="newDepartmentDialog" class="dlg" widgetVar="newDepartmentDialog"
+                              modal="false"
+                              showEffect="fade" hideEffect="fade" resizable="false">
+                        <p:outputPanel class="form" id="newTeamData">
+                                <p:outputLabel class="text" value="Abteilungsname" for="departmentName"/>
+                                <div class="ui-inputgroup">
+                                    <p:inputText id="departmentName" value="#{departmentCreationController.department.departmentName}">
+                                        <p:ajax event="blur" listener="#{departmentCreationController.validateDepartmentName}"
+                                                update="saveButton"/>
+                                    </p:inputText>
+                                </div>
+
+                                <p:outputLabel class="text" value="AbteilungsleiterIn" for="ndepartmentManager"/>
+                                <div class="ui-inputgroup">
+                                    <p:selectOneMenu id="ndepartmentManager" value="#{departmentCreationController.selectedUser}" label="AbteilungsleiterIn" filter="true" filterMatchMode="contains">
+                                        <f:selectItem itemLabel="Nicht wählen" itemValue=""/>
+                                        <f:selectItems value="#{departmentCreationController.availableUser}"/>
+                                    </p:selectOneMenu>
+                                </div>
+
+                                <p:outputLabel class="text" value="Hinzugefügt von" for="createuser"/>
+                                <div class="ui-inputgroup">
+                                    <p:inputText id="createuser" value="#{sessionInfoBean.currentUser}"
+                                                 readonly="true"/>
+                                </div>
+
+                        </p:outputPanel>
+                        <div class="dialog-buttons">
+                            <p:commandButton value="Erstellen" id="saveButton"
+                                             action="#{departmentCreationController.doSaveDepartment()}"
+                                             oncomplete="PF('creatingSuccessful').show(), PF('newDepartmentDialog').hide()"
+                                             disabled="#{departmentCreationController.disableSaveButton}"/>
+                        </div>
+                    </p:dialog>
+
+
+                    <h:form>
+                        <p:confirmDialog global="true" modal="false" showEffect="fade" hideEffect="fade"
+                                         resizable="false">
+                            <p:commandButton value="Ja" type="button" styleClass="ui-confirmdialog-yes"
+                                             icon="pi pi-check"/>
+                            <p:commandButton value="Nein" type="button" styleClass="ui-confirmdialog-no"
+                                             icon="pi pi-times"/>
+                        </p:confirmDialog>
+                    </h:form>
+
+
+
+                    <h:form>
+                        <p:dialog header="Erfolg" id="creatingSuccessful" widgetVar="creatingSuccessful" modal="false"
+                                  showEffect="fade"
+                                  hideEffect="fade" resizable="false" onHide="location.reload()">
+                            <h:panelGrid columns="1" style="text-align: center">
+                                <h:outputText value="Abteilung erfolgreich erstellt."/>
+                                <p:commandButton value="Ok" id="comfirmButton"
+                                                 oncomplete="location.reload()"/>
+                            </h:panelGrid>
+                        </p:dialog>
+                    </h:form>
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>

@@ -1,0 +1,149 @@
+body {
+    background-image: url("/images/Background.jpg");
+    background-size: cover;
+    font-family: Oswald, sans-serif !important;
+    margin: 0;
+}
+
+.content {
+    margin-top: 1% !important;
+    margin-left: 16% !important;
+    margin-right: 1% !important;
+}
+
+.footer {
+    margin-left: 16%;
+    margin-right: 1%;
+}
+
+.header {
+    background-color: #323232;
+    border: 0 !important;
+    margin: 0 !important;
+    position: -webkit-sticky;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+}
+
+#header_logo_form {
+    width: 25vh;
+    text-align: center;
+}
+
+#login_logo {
+    position: absolute;
+    width: 50vh;
+    margin-left: -15%;
+}
+
+#login_logo_form {
+    width: 25vh;
+    text-align: center;
+}
+
+#login_outer_form {
+    display: grid;
+    height: 100vh;
+    place-items: center;
+    margin-left: -15%;
+}
+
+#login_inner_form {
+    display: grid;
+    background-color: white;
+    height: 60vh;
+    width: 40vh;
+    place-items: center;
+    box-shadow: 5px 7px lightslategrey;
+    border-radius: 20px;
+}
+
+#password {
+    width: 30vh;
+    height: 5vh;
+    background-color: whitesmoke;
+    box-shadow: 2px 2px lightslategrey;
+    border-color: lightslategrey;
+}
+
+#username {
+    width: 30vh;
+    height: 5vh;
+    background-color: whitesmoke;
+    box-shadow: 2px 2px lightslategrey;
+    border-color: lightslategrey;
+    margin-bottom: 2vh;
+}
+
+#text_username,#text_pw, #text_button {
+    font-size: 2vh;
+}
+
+#login_button{
+    margin-top: 3vh;
+    margin-bottom:2vh;
+    width: 30vh;
+    height: 5vh;
+    box-shadow: 2px 2px lightslategrey;
+    border-color: #00d7ff;
+    background-color: #00d7ff;
+}
+
+#text_forgotten_label{
+    font-size: 1.5vh;
+    color: lightslategrey;
+    margin-left: 3.5vh;
+}
+
+#text_forgotten_link{
+    font-size: 1.5vh;
+    color: #00d7ff;
+}
+
+.ui-button{
+    background-color: #00d7ff !important;
+    border-color: #00d7ff !important;
+}
+
+#text_username,#text_pw, #text_button {
+    font-size: 2vh;
+}
+.sidenav {
+    height: 100%;
+    width: 15%;
+    position: fixed;
+    z-index: 1;
+    left: 0;
+    background-color: white;
+    overflow-x: hidden;
+}
+
+.ui-menu{
+    border: 20px !important;
+    text-align: center;
+}
+.ui-menu .ui-menu-list .ui-widget-header{
+    border: 2px !important;
+    background-color: #e6e6e6 !important;
+}
+.ui-menu .ui-menu-list .ui-widget-header h3{
+    color: black !important;
+}
+.ui-menu .ui-menu-list .ui-menuitem{
+    background-color: white;
+}
+
+.ui-menu .ui-menu-list .ui-menuitem .ui-menuitem-link.ui-state-hover{
+    background-color: #00d7ff !important;
+}
+
+.ui-icon-close{
+    color: white !important;
+}
+
+.ui-selectonemenu-panel .ui-selectonemenu-items .ui-selectonemenu-item.ui-state-highlight{
+    background-color: #00d7ff !important;
+    opacity: 100% !important;
+}
+

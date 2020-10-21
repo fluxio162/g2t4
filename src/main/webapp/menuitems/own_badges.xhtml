@@ -1,0 +1,71 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<ui:composition xmlns="http://www.w3c.org/1999/xhtml"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:p="http://primefaces.org/ui"
+                template="/WEB-INF/templates/main.xhtml">
+
+    <ui:define name="content">
+        <h:outputStylesheet name="badges.css" library="css"/>
+        <div class="outer">
+            <div class="inner">
+                <h:form id="form">
+                    <div class="heading">
+                        <h:outputText value="Hier finden Sie Ihre Badges:"/>
+                    </div>
+
+                    <p:dataView var="badge" value="#{badgeListController.getAllBadgesFromUser(sessionInfoBean.currentUser)}"
+                                gridIcon="pi pi-th-large" listIcon="pi pi-bars"
+                                rows="3"
+                                paginator="true"
+                                paginatorTemplate="{CurrentPageReport} {FirstPageLink} {PreviousPageLink} {PageLinks} {NextPageLink} {LastPageLink} {RowsPerPageDropdown}"
+                                currentPageReportTemplate="{startRecord}-{endRecord} of {totalRecords} records"
+                                rowsPerPageTemplate="3,6,9"
+                                paginatorPosition="bottom">
+
+                        <p:dataViewGridItem>
+                            <p:panel header="#{badge.id}" style="text-align:center">
+                                <h:panelGrid columns="1" style="width:100%">
+                                    <p:graphicImage class="badge" value="#{badge.img.toString()}"/>
+
+                                    <h:outputText value="#{badge.badgeTitle}" />
+
+
+                                </h:panelGrid>
+                            </p:panel>
+                        </p:dataViewGridItem>
+
+                        <p:dataViewListItem>
+                            <h:panelGrid columns="3" cellpadding="20" columnClasses="badge-column,detail">
+                                <p:graphicImage class="badge" value="#{badge.img.toString()}"/>
+
+                                <p:outputPanel>
+                                    <h:panelGrid columns="2" width="50%">
+                                        <h:outputText value="ID:" />
+                                        <h:outputText class="data" value="#{badge.id}"/>
+
+                                        <h:outputText value="Titel:" />
+                                        <h:outputText class="data" value="#{badge.badgeTitle}"/>
+
+                                        <h:outputText value="Gesamtzeit:" />
+                                        <h:outputText class="data" value="#{badge.timeSpentOnTask} Stunden"/>
+
+                                        <h:outputText value="Erhalten am:" />
+                                        <h:outputText class="data" value="#{badge.createDate}">
+                                            <f:convertDateTime pattern="dd.MM.yyyy"/>
+                                        </h:outputText>
+                                    </h:panelGrid>
+                                </p:outputPanel>
+
+                            </h:panelGrid>
+                        </p:dataViewListItem>
+                    </p:dataView>
+
+                </h:form>
+            </div>
+        </div>
+    </ui:define>
+</ui:composition>
